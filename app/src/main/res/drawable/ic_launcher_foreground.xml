@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Road: from the vanishing point under the top bar, out of the window, off the bottom -->
+    <path
+        android:pathData="M16.56,108L91.44,108L54,36Z"
+        android:fillColor="#161616" />
+    <!-- Browser window frame and top bar -->
+    <path
+        android:pathData="M39,28H69A6,6 0 0,1 75,34V54A6,6 0 0,1 69,60H39A6,6 0 0,1 33,54V34A6,6 0 0,1 39,28Z"
+        android:strokeColor="#161616"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M33,36V34A6,6 0 0,1 39,28H69A6,6 0 0,1 75,34V36Z"
+        android:fillColor="#161616" />
+    <!-- Gold address pill and dashed centre line -->
+    <path
+        android:pathData="M42,30.5H66A1.5,1.5 0 0,1 66,33.5H42A1.5,1.5 0 0,1 42,30.5Z"
+        android:fillColor="#C9A227" />
+    <path
+        android:pathData="M53.2,47L54.8,47L54.51,43L53.49,43Z"
+        android:fillColor="#C9A227" />
+    <path
+        android:pathData="M52.58,55.5L55.42,55.5L55.02,50L52.98,50Z"
+        android:fillColor="#C9A227" />
+    <path
+        android:pathData="M51.45,71L56.55,71L56.04,64L51.96,64Z"
+        android:fillColor="#C9A227" />
+    <path
+        android:pathData="M50.29,87L57.71,87L56.98,77L51.02,77Z"
+        android:fillColor="#C9A227" />
+    <path
+        android:pathData="M48.76,108L59.24,108L58.22,94L49.78,94Z"
+        android:fillColor="#C9A227" />
+</vector>

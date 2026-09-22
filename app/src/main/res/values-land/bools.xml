@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="toolbar_show_secondary_actions">true</bool>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tablet Layout Dimensions (600dp+) -->
+    <dimen name="menu_card_corner_radius">32dp</dimen>
+    <dimen name="menu_card_elevation">12dp</dimen>
+    <dimen name="menu_padding_horizontal">32dp</dimen>
+    <dimen name="menu_padding_vertical">32dp</dimen>
+    <dimen name="menu_max_height">700dp</dimen>
+
+    <!-- Content Spacing -->
+    <dimen name="menu_section_spacing">24dp</dimen>
+    <dimen name="menu_item_spacing">20dp</dimen>
+    <dimen name="menu_small_spacing">12dp</dimen>
+
+    <!-- UI Elements -->
+    <dimen name="button_corner_radius">20dp</dimen>
+    <dimen name="card_corner_radius">20dp</dimen>
+    <dimen name="drag_handle_width">48dp</dimen>
+    <dimen name="drag_handle_height">5dp</dimen>
+
+    <!-- Button Sizes -->
+    <dimen name="icon_button_size">56dp</dimen>
+    <dimen name="icon_size_small">24dp</dimen>
+    <dimen name="icon_size_medium">28dp</dimen>
+
+    <dimen name="toolbar_height">76dp</dimen>
+    <dimen name="toolbar_margin">14dp</dimen>
+    <dimen name="toolbar_button_size">60dp</dimen>
+    <dimen name="toolbar_icon_size">30dp</dimen>
+    <dimen name="toolbar_pill_height">56dp</dimen>
+    <dimen name="toolbar_address_text_size">18sp</dimen>
+    <dimen name="menu_button_icon_size">30dp</dimen>
+    <dimen name="menu_button_min_height">76dp</dimen>
+    <dimen name="start_page_padding">28dp</dimen>
+    <dimen name="start_page_tile_icon_size">60dp</dimen>
+    <dimen name="start_page_tile_min_height">140dp</dimen>
+</resources>
+

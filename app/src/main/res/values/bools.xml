@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Forward / reload / bookmarks only fit in the bottom toolbar on wide screens. -->
+    <bool name="toolbar_show_secondary_actions">false</bool>
+    <bool name="window_light_system_bars">true</bool>
+</resources>

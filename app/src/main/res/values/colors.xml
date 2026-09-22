@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RoadBrowser palette: warm white surfaces, charcoal text, champagne-gold accent. No blue. -->
+<resources>
+    <color name="theme_primary">#8A6D0B</color>
+    <color name="theme_on_primary">#FFFFFF</color>
+    <color name="theme_primary_container">#F4EFE2</color>
+    <color name="theme_on_primary_container">#3A2E00</color>
+    <color name="theme_secondary">#5C5750</color>
+    <color name="theme_on_secondary">#FFFFFF</color>
+    <color name="theme_secondary_container">#F1EEE8</color>
+    <color name="theme_on_secondary_container">#1B1915</color>
+    <color name="theme_tertiary">#6B5B4E</color>
+    <color name="theme_on_tertiary">#FFFFFF</color>
+    <color name="theme_tertiary_container">#F3EDE6</color>
+    <color name="theme_on_tertiary_container">#241A12</color>
+    <color name="theme_error">#B3261E</color>
+    <color name="theme_on_error">#FFFFFF</color>
+    <color name="theme_error_container">#F9DEDC</color>
+    <color name="theme_on_error_container">#410E0B</color>
+    <color name="theme_background">#FBFAF7</color>
+    <color name="theme_on_background">#161616</color>
+    <color name="theme_surface">#FBFAF7</color>
+    <color name="theme_on_surface">#161616</color>
+    <color name="theme_surface_variant">#E9E5DC</color>
+    <color name="theme_on_surface_variant">#4C4842</color>
+    <color name="theme_outline">#7D786F</color>
+    <color name="theme_outline_variant">#D6D1C7</color>
+    <color name="theme_surface_container_lowest">#FFFFFF</color>
+    <color name="theme_surface_container_low">#F5F3EE</color>
+    <color name="theme_surface_container">#EFECE5</color>
+    <color name="theme_surface_container_high">#E9E6DE</color>
+    <color name="theme_surface_container_highest">#E3DFD6</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="qr_code_background">#FFFFFF</color>
+    <color name="menu_overlay_scrim">#66000000</color>
+    <color name="start_page_gradient_start">#FFFFFF</color>
+    <color name="start_page_gradient_center">#FBF9F4</color>
+    <color name="start_page_gradient_end">#F3EEE1</color>
+    <color name="launcher_background_fill">#F7F5F0</color>
+    <color name="launcher_grid_stroke">#14161616</color>
+</resources>

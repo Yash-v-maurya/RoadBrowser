@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Unable to reach site</title>
+  <style>
+    body { font-family: Roboto, Arial, sans-serif; background:#f7f7f7; color:#222; margin:0; padding:24px; }
+    .card { max-width:720px; margin:36px auto; background:#fff; border-radius:8px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);} 
+    h1 { margin:0 0 8px 0; font-size:20px; }
+    p { margin:8px 0; }
+    ul { margin:8px 0 16px 20px; }
+    .actions { display:flex; gap:8px; }
+    button { background:#1f6feb; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; }
+    button.secondary { background:#e0e0e0; color:#111; }
+    .small { font-size:13px; color:#666; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Can't reach this site</h1>
+    <p>We couldn't load the page you requested. Possible reasons include:</p>
+    <ul>
+      <li>Your device is offline (no network connection).</li>
+      <li>There is a DNS problem or the domain name cannot be resolved.</li>
+      <li>The server is down or temporarily unreachable.</li>
+      <li>A firewall, VPN, or network policy is blocking access.</li>
+      <li>The site requires a secure connection (TLS) that failed.</li>
+      <li>The hostname is blocked on this device or network.</li>
+    </ul>
+    <div class="actions">
+      <button id="retry">Retry</button>
+      <button id="openExternal" class="secondary">Open externally</button>
+    </div>
+    <p class="small">If the problem persists, try switching networks or checking your DNS settings.</p>
+  </div>
+
+  <script>
+    function getParam(name) {
+      const params = new URLSearchParams(location.search);
+      return params.get(name) || '';
+    }
+
+    const failed = decodeURIComponent(getParam('failedUrl') || '')
+    const httpStatus = getParam('httpStatus') || ''
+    const code = getParam('code') || httpStatus || ''
+    const message = decodeURIComponent(getParam('message') || '')
+
+    if (code || message) {
+      const info = document.createElement('p')
+      info.className = 'small'
+      info.textContent = (code ? ('Error code: ' + code + (message ? ' — ' : '')) : '') + (message || '')
+      document.querySelector('.card').appendChild(info)
+    }
+
+    document.getElementById('retry').addEventListener('click', function() {
+      if (failed) {
+        location.href = failed
+      } else {
+        location.reload()
+      }
+    })
+
+    document.getElementById('openExternal').addEventListener('click', function() {
+      if (typeof Android !== 'undefined' && Android.openExternal) {
+        try { Android.openExternal(failed || '') } catch (e) { window.open(failed || '', '_blank') }
+      } else {
+        window.open(failed || '', '_blank')
+      }
+    })
+  </script>
+</body>
+</html>

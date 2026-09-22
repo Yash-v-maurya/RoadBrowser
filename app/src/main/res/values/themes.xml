@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.RoadBrowser" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/theme_primary</item>
+        <item name="colorOnPrimary">@color/theme_on_primary</item>
+        <item name="colorPrimaryContainer">@color/theme_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/theme_on_primary_container</item>
+        <item name="colorSecondary">@color/theme_secondary</item>
+        <item name="colorOnSecondary">@color/theme_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/theme_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/theme_on_secondary_container</item>
+        <item name="colorTertiary">@color/theme_tertiary</item>
+        <item name="colorOnTertiary">@color/theme_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/theme_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/theme_on_tertiary_container</item>
+        <item name="colorError">@color/theme_error</item>
+        <item name="colorOnError">@color/theme_on_error</item>
+        <item name="colorErrorContainer">@color/theme_error_container</item>
+        <item name="colorOnErrorContainer">@color/theme_on_error_container</item>
+        <item name="android:colorBackground">@color/theme_background</item>
+        <item name="colorOnBackground">@color/theme_on_background</item>
+        <item name="colorSurface">@color/theme_surface</item>
+        <item name="colorOnSurface">@color/theme_on_surface</item>
+        <item name="colorSurfaceVariant">@color/theme_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/theme_on_surface_variant</item>
+        <item name="colorOutline">@color/theme_outline</item>
+        <item name="colorOutlineVariant">@color/theme_outline_variant</item>
+        <item name="colorSurfaceContainerLowest">@color/theme_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/theme_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/theme_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/theme_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/theme_surface_container_highest</item>
+        <item name="android:windowBackground">@color/theme_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/theme_background</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_system_bars</item>
+        <item name="android:windowLightNavigationBar">@bool/window_light_system_bars</item>
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.RoadBrowser.DisplayLarge</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.RoadBrowser.DisplayMedium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.RoadBrowser.DisplaySmall</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.RoadBrowser.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.RoadBrowser.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.RoadBrowser.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.RoadBrowser.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.RoadBrowser.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.RoadBrowser.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.RoadBrowser.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.RoadBrowser.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.RoadBrowser.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.RoadBrowser.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.RoadBrowser.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.RoadBrowser.LabelSmall</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textViewStyle">@style/Widget.RoadBrowser.TextView</item>
+        <item name="android:editTextStyle">@style/Widget.RoadBrowser.EditText</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.RoadBrowser.Small</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.RoadBrowser.Medium</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.RoadBrowser.Large</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.RoadBrowser.ExtraLarge</item>
+        <item name="materialCardViewStyle">@style/Widget.RoadBrowser.Card</item>
+    </style>
+
+    <!-- Circular Image Shape -->
+    <style name="ShapeAppearance.App.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Bottom Sheet Shape -->
+    <style name="ShapeAppearanceOverlay.App.Card.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">28dp</item>
+        <item name="cornerSizeTopRight">28dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- Typography: Manrope everywhere, weight by role -->
+    <style name="TextAppearance.RoadBrowser.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">800</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">800</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">800</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.RoadBrowser.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="Widget.RoadBrowser.TextView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+    </style>
+    <style name="Widget.RoadBrowser.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:fontFamily">@font/roadbrowser_sans</item>
+        <item name="fontFamily">@font/roadbrowser_sans</item>
+    </style>
+
+    <!-- Shapes: soft, pill-leaning corners -->
+    <style name="ShapeAppearance.RoadBrowser.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearance.RoadBrowser.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerSize">18dp</item>
+    </style>
+    <style name="ShapeAppearance.RoadBrowser.Large" parent="ShapeAppearance.Material3.Corner.Large">
+        <item name="cornerSize">24dp</item>
+    </style>
+    <style name="ShapeAppearance.RoadBrowser.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerSize">32dp</item>
+    </style>
+
+    <!-- Cards: flat white with a hairline warm outline instead of drop shadows -->
+    <style name="Widget.RoadBrowser.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">0dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+    </style>
+
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Landscape Layout Dimensions -->
+    <dimen name="menu_max_height">450dp</dimen>
+    <dimen name="menu_padding_vertical">16dp</dimen>
+
+    <!-- Head units are landscape but short (a 800x480 unit is ~612x367dp): bigger targets,
+         but the bar must not eat the page. -->
+    <dimen name="toolbar_height">60dp</dimen>
+    <dimen name="toolbar_margin">8dp</dimen>
+    <dimen name="toolbar_button_size">52dp</dimen>
+    <dimen name="toolbar_icon_size">26dp</dimen>
+    <dimen name="toolbar_pill_height">46dp</dimen>
+    <dimen name="toolbar_address_text_size">16sp</dimen>
+    <dimen name="menu_button_icon_size">28dp</dimen>
+    <dimen name="menu_button_min_height">68dp</dimen>
+    <dimen name="start_page_padding">20dp</dimen>
+    <dimen name="start_page_tile_icon_size">44dp</dimen>
+    <dimen name="start_page_tile_min_height">104dp</dimen>
+    <dimen name="start_page_tile_min_width">128dp</dimen>
+</resources>
+
