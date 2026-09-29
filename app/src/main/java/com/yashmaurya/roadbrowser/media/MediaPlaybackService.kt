@@ -173,11 +173,16 @@ class MediaPlaybackService : MediaBrowserService() {
         }
         // Keep whatever is already playing; only an idle session reports the miss.
         if (state == PlaybackState.STATE_PLAYING || state == PlaybackState.STATE_BUFFERING) return
+        showError(getString(R.string.car_media_no_match, wanted))
+    }
+
+    /** Shows [message] on Android Auto's player without touching what the session describes. */
+    private fun showError(message: String) {
         session.setPlaybackState(
             PlaybackState.Builder()
                 .setActions(SUPPORTED_ACTIONS)
                 .setState(PlaybackState.STATE_ERROR, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 0f)
-                .setErrorMessage(getString(R.string.car_media_no_match, wanted))
+                .setErrorMessage(message)
                 .build()
         )
         session.isActive = true
@@ -186,8 +191,11 @@ class MediaPlaybackService : MediaBrowserService() {
     }
 
     private fun playInCar(page: CarMediaCatalog.Page) {
+        if (!BackgroundWebPlayer.play(this, page.url)) {
+            showError(getString(R.string.webview_unavailable_title))
+            return
+        }
         takeOwnership(Source.CAR_PLAYER)
-        BackgroundWebPlayer.play(this, page.url)
         state = PlaybackState.STATE_BUFFERING
         title = page.title
         artist = ""

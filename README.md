@@ -55,6 +55,8 @@ Requires **Android 15 or later** on the phone. No special installer is needed; i
 
 If it doesn't launch the first time, open a non-Google navigation app (for example Waze) on the head unit first, then open RoadBrowser.
 
+**Not showing up, or crashing?** Follow the [Android Auto Setup guide](docs/legal/android-auto-setup.md). The same checklist is built into the app under **Settings > Android Auto and help > Android Auto setup**, with a live status and a settings button for every step. If the app crashed, **Share crash report** on the same screen gives you the details to attach to an issue.
+
 A longer walkthrough, including the adb route and OnePlus/ColorOS battery settings, is in [docs/INSTALL.md](docs/INSTALL.md).
 
 ---
@@ -151,6 +153,7 @@ The only official source for RoadBrowser is **https://github.com/Yash-v-maurya/R
 
 ## Legal
 
+- [Android Auto Setup](docs/legal/android-auto-setup.md): making RoadBrowser show up in the car, plus troubleshooting.
 - [Privacy Policy](docs/legal/privacy.md): no accounts, no analytics, nothing sent to the developer.
 - [Terms of Use](docs/legal/terms.md)
 - [Driving Safety](docs/legal/driving-safety.md)

@@ -105,6 +105,12 @@
             android:theme="@style/Theme.RoadBrowser" />
 
         <activity
+            android:name=".settings.CarSetupActivity"
+            android:exported="false"
+            android:label="@string/car_setup_title"
+            android:theme="@style/Theme.RoadBrowser" />
+
+        <activity
             android:name=".settings.LegalActivity"
             android:exported="false"
             android:label="@string/settings_legal"

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Android Auto Setup · RoadBrowser</title>
+<style>
+  /* First source serves the download site, second the copy bundled in the app. */
+  @font-face {
+    font-family: "Overpass";
+    src: url("../assets/overpass.ttf") format("truetype-variations"),
+         url("file:///android_res/font/overpass.ttf") format("truetype-variations");
+    font-weight: 300 700;
+    font-display: swap;
+  }
+  :root {
+    --paper: #ede3cf;
+    --card: #faf6ec;
+    --ink: #1b1714;
+    --ink-muted: #5d5445;
+    --rule: #c9b894;
+    --amber: #8a5a0e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14120f;
+      --card: #1b1815;
+      --ink: #f2ead9;
+      --ink-muted: #d0c7b5;
+      --rule: #4e483e;
+      --amber: #e3b25c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Overpass", system-ui, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 16px 56px; }
+  header { padding: 28px 0 0; }
+  .brand { font-weight: 700; letter-spacing: -0.01em; color: var(--ink-muted); }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+  nav a {
+    color: var(--ink); text-decoration: none; font-weight: 600; font-size: .95rem;
+    padding: 9px 16px; border: 1px solid var(--rule); border-radius: 999px; background: var(--card);
+  }
+  nav a[aria-current="page"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .roadrule {
+    height: 5px; margin: 22px 0 0; border-radius: 3px; opacity: .85;
+    background: repeating-linear-gradient(90deg, var(--amber) 0 30px, transparent 30px 52px);
+  }
+  h1 { font-size: clamp(2rem, 6vw, 2.8rem); letter-spacing: -0.02em; line-height: 1.1; margin: 28px 0 12px; }
+  h2 { font-size: 1.25rem; margin: 34px 0 8px; padding-top: 18px; border-top: 1px solid var(--rule); }
+  p, li { max-width: 68ch; }
+  li { margin-bottom: 6px; }
+  a { color: var(--amber); overflow-wrap: anywhere; }
+  code { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+  tr:last-child td { border-bottom: 0; }
+  th { font-weight: 600; }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--ink-muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">RoadBrowser</div>
+    <nav><a href="android-auto-setup.html" aria-current="page">Android Auto setup</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="driving-safety.html">Driving safety</a><a href="notices.html">Notices</a></nav>
+    <div class="roadrule"></div>
+  </header>
+  <main>
+<h1>Android Auto Setup</h1>
+<p>RoadBrowser doesn't come from the Play Store, so Android Auto hides it until you allow apps from other sources. You only need to do this once, on the phone. The same checklist is in the app under <strong>Settings &gt; Android Auto and help &gt; Android Auto setup</strong>, where each step shows whether it's done and has a button that opens the right settings page.</p>
+<h2>What you need</h2>
+<ul>
+<li>A phone running <strong>Android 15 or later</strong>.</li>
+<li>The <strong>Android Auto</strong> app, up to date from the Play Store.</li>
+<li>A car or head unit with Android Auto, wired or wireless.</li>
+<li>RoadBrowser from the official <a href="https://github.com/Yash-v-maurya/RoadBrowser/releases/latest">releases page</a>, installed in your <strong>main</strong> phone profile. Android Auto doesn't see apps installed in a cloned-app space, a second space or a work profile.</li>
+</ul>
+<h2>Step 1: Install RoadBrowser</h2>
+<p>Download <code>RoadBrowser-&lt;version&gt;.apk</code> on the phone and open it. If Android asks, allow installs from your browser or file manager. Updates install over the old version and keep your bookmarks and settings.</p>
+<h2>Step 2: Allow apps from outside the Play Store in Android Auto</h2>
+<ol>
+<li>Open phone <strong>Settings</strong>, search for <strong>Android Auto</strong> and open it.</li>
+<li>Scroll to the bottom and tap <strong>Version</strong> ten times. Tap <strong>OK</strong> when Android Auto asks about developer settings.</li>
+<li>Open the <strong>three-dot menu</strong> in the top-right corner and choose <strong>Developer settings</strong>.</li>
+<li>Tick <strong>Unknown sources</strong>.</li>
+</ol>
+<p>In RoadBrowser, <strong>Settings &gt; Android Auto setup &gt; Open Android Auto settings</strong> takes you straight to step 1.</p>
+<h2>Step 3: Make sure RoadBrowser is in the car launcher</h2>
+<p>In Android Auto's settings, open <strong>Customize launcher</strong> and make sure <strong>RoadBrowser</strong> is ticked. RoadBrowser also shows up among the media apps, which is the part you use for listening while driving.</p>
+<h2>Step 4: Phone settings that keep audio playing</h2>
+<ul>
+<li><strong>Notifications:</strong> allow them. The playback controls and steering-wheel buttons depend on them.</li>
+<li><strong>Battery:</strong> set RoadBrowser to <strong>Unrestricted</strong>, or <strong>Don't optimize</strong>, so the phone doesn't stop audio a few minutes after Maps covers the browser.</li>
+<li>OnePlus, OPPO and realme: App info &gt; Battery &gt; <strong>Unrestricted</strong> (and allow background activity).</li>
+<li>Samsung: App info &gt; Battery &gt; <strong>Unrestricted</strong>. Also check that RoadBrowser isn't in <strong>Sleeping apps</strong>.</li>
+<li>Xiaomi, Redmi and POCO: App info &gt; Battery saver &gt; <strong>No restrictions</strong>, and turn on <strong>Autostart</strong>.</li>
+<li><strong>In RoadBrowser:</strong> Settings &gt; Media &amp; playback &gt; <strong>Keep audio playing in background</strong> on. It is on by default.</li>
+</ul>
+<h2>Step 5: Reconnect</h2>
+<p>Unplug the phone and plug it back in, or force-stop Android Auto (App info &gt; Force stop). With wireless Android Auto, turn the car's Bluetooth off and on. The car launcher refreshes and RoadBrowser appears.</p>
+<h2>Using it in the car</h2>
+<ul>
+<li><strong>Parked:</strong> open RoadBrowser from the car launcher for the full browser.</li>
+<li><strong>Driving:</strong> Android Auto locks the browser screen while the car moves. Audio you started keeps playing, and RoadBrowser in the media section lets you pick your quick links and bookmarks and control them with Android Auto's player or the steering wheel. See <a href="driving-safety.html">Driving Safety</a>.</li>
+</ul>
+<h2>Troubleshooting</h2>
+<h3>RoadBrowser doesn't appear in the car</h3>
+<p>Work down this list:</p>
+<ol>
+<li><strong>Unknown sources got switched off.</strong> Android Auto updates can reset developer settings. Repeat step 2.</li>
+<li><strong>It's hidden in the launcher.</strong> Repeat step 3.</li>
+<li><strong>The car hasn't refreshed.</strong> Reconnect as in step 5.</li>
+<li><strong>Wrong profile.</strong> If RoadBrowser was installed in a cloned-app space, a second space or a work profile, install it in the main profile instead.</li>
+<li><strong>Android Auto is out of date.</strong> Update it from the Play Store, then reconnect.</li>
+<li><strong>It shows up but won't open the first time.</strong> Open another navigation app on the head unit first (for example Waze), then open RoadBrowser.</li>
+</ol>
+<h3>RoadBrowser crashes</h3>
+<ol>
+<li>Update <strong>Android System WebView</strong> and <strong>Chrome</strong> from the Play Store. RoadBrowser draws every page with WebView. If WebView is missing or in the middle of an update, RoadBrowser now tells you instead of closing.</li>
+<li>Update to the latest RoadBrowser.</li>
+<li>If it crashes as soon as it opens: App info &gt; Storage &gt; <strong>Clear cache</strong>. This keeps your bookmarks and settings.</li>
+<li>Send a crash report so it can be fixed: <strong>Settings &gt; Android Auto and help &gt; Share crash report</strong>, then attach the text to a new issue on <a href="https://github.com/Yash-v-maurya/RoadBrowser/issues">GitHub</a>. The report contains the app version, the Android version, the phone model and the technical error. Nothing is sent unless you share it.</li>
+</ol>
+<h3>Audio stops after a few minutes</h3>
+<p>Check the battery setting in step 4 and that <strong>Keep audio playing in background</strong> is on.</p>
+<h3>A page picked in the car's media list stays silent</h3>
+<p>Some players only start after a tap on their own play button. For those, start playback while parked; it keeps playing when you drive off.</p>
+<h3>"App not installed" when updating</h3>
+<p>The copy on the phone was signed with a different key, for example one you built yourself. Uninstall it first (this deletes its bookmarks), then install the official release.</p>
+<h2>Reporting a problem</h2>
+<p>Open an issue on <a href="https://github.com/Yash-v-maurya/RoadBrowser/issues">GitHub</a> with your phone model, Android version, Android Auto version (at the bottom of Android Auto's settings), your car or head unit, and a crash report if there is one.</p>
+  </main>
+  <footer>Made by Yash V Maurya · <a href="https://github.com/Yash-v-maurya/RoadBrowser">github.com/Yash-v-maurya/RoadBrowser</a></footer>
+</div>
+</body>
+</html>

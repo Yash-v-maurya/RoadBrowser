@@ -1,5 +1,7 @@
 # Installing RoadBrowser
 
+> The short, step-by-step version with troubleshooting is the [Android Auto Setup guide](legal/android-auto-setup.md). In the app, **Settings > Android Auto and help > Android Auto setup** checks each step for you.
+
 This guide walks through getting RoadBrowser onto your phone and showing it on the Android Auto head unit. It takes about five minutes.
 
 **Requirements**

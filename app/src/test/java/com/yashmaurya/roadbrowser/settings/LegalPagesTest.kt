@@ -29,7 +29,8 @@ class LegalPagesTest {
             LegalActivity.PRIVACY to "Privacy Policy",
             LegalActivity.TERMS to "Terms of Use",
             LegalActivity.DRIVING_SAFETY to "Driving Safety",
-            LegalActivity.NOTICES to "Open-Source Notices"
+            LegalActivity.NOTICES to "Open-Source Notices",
+            LegalActivity.ANDROID_AUTO_SETUP to "Android Auto Setup"
         )
         expected.forEach { (page, title) ->
             val html = context.assets.open("legal/$page.html").bufferedReader().use { it.readText() }

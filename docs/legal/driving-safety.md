@@ -30,4 +30,4 @@ If a page won't play or the sound stops, pull over somewhere safe before you try
 
 In many places it is illegal to hold a phone or watch video while driving. Know the rules where you drive. You are responsible for how you use RoadBrowser in a vehicle.
 
-See also: [Terms of Use](terms.md) · [Privacy Policy](privacy.md) · [Open-Source Notices](notices.md)
+See also: [Android Auto Setup](android-auto-setup.md) · [Terms of Use](terms.md) · [Privacy Policy](privacy.md) · [Open-Source Notices](notices.md)

@@ -23,6 +23,8 @@
     <item name="viewTermsButton" type="id" />
     <item name="viewDrivingSafetyButton" type="id" />
     <item name="viewNoticesButton" type="id" />
+    <item name="carSetupButton" type="id" />
+    <item name="shareCrashReportButton" type="id" />
     <item name="buttonQrCopy" type="id" />
     <item name="buttonQrExternalBrowser" type="id" />
 </resources>

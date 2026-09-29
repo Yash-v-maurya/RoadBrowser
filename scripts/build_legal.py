@@ -1,4 +1,5 @@
-"""Renders the legal documents in docs/legal/*.md into standalone HTML pages.
+"""Renders the documents in docs/legal/*.md (legal pages and the Android Auto setup guide) into
+standalone HTML pages.
 
     python scripts/build_legal.py [--site DIR]
 
@@ -20,6 +21,7 @@ ASSET_DIR = ROOT / "app" / "src" / "main" / "assets" / "legal"
 
 # Order and labels of the shared navigation strip.
 PAGES = [
+    ("android-auto-setup", "Android Auto setup"),
     ("privacy", "Privacy"),
     ("terms", "Terms"),
     ("driving-safety", "Driving safety"),

@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.3.1 - 2026-09-29
+
+Version code 12.
+
+### Added
+
+- **Android Auto setup screen** (Settings > Android Auto and help). A checklist with a live status for every step: Android Auto installed, unknown sources, the car launcher, notifications, battery, background audio and reconnecting, each with a button that opens the right settings page.
+- **Android Auto Setup guide** with troubleshooting for "doesn't show up in the car", crashes and audio stopping, in `docs/legal/`, in the app and on the download page.
+- **Crash reports you can send.** Crashes are saved on the phone (app version, Android version, phone model, technical error). **Share crash report** in Settings sends one through the share sheet. Nothing is uploaded automatically; the privacy policy says so.
+
+### Fixed
+
+- No more crash on launch while Android System WebView is missing, disabled or being updated. RoadBrowser explains the problem and offers to update WebView; Android Auto's player shows the same message.
+- With a display scale other than 100%, the car screen used the phone's density and the UI came out far too large there.
+
 ## 2.3 - 2026-09-29
 
 Version code 11.

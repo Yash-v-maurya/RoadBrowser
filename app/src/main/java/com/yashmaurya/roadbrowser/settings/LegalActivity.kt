@@ -15,8 +15,8 @@ import com.yashmaurya.roadbrowser.data.BrowserPreferences
 import com.yashmaurya.roadbrowser.databinding.ActivityLegalBinding
 
 /**
- * Shows one of the legal pages bundled in `assets/legal` (privacy policy, terms of use, driving
- * safety, open-source notices). They ship with the app so they open offline, car screen
+ * Shows one of the pages bundled in `assets/legal` (privacy policy, terms of use, driving
+ * safety, open-source notices, and the Android Auto setup guide). They ship with the app so they open offline, car screen
  * included. The pages link to each other; links to other sites are handed to the browser.
  * The HTML is generated from `docs/legal` by `scripts/build_legal.py`.
  */
@@ -85,10 +85,11 @@ class LegalActivity : AppCompatActivity() {
         const val TERMS = "terms"
         const val DRIVING_SAFETY = "driving-safety"
         const val NOTICES = "notices"
+        const val ANDROID_AUTO_SETUP = "android-auto-setup"
 
         private const val EXTRA_PAGE = "page"
         private const val ASSET_PREFIX = "/android_asset/legal/"
-        private val PAGES = setOf(PRIVACY, TERMS, DRIVING_SAFETY, NOTICES)
+        private val PAGES = setOf(PRIVACY, TERMS, DRIVING_SAFETY, NOTICES, ANDROID_AUTO_SETUP)
 
         fun intent(context: Context, page: String): Intent =
             Intent(context, LegalActivity::class.java).putExtra(EXTRA_PAGE, page)

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
 import android.util.DisplayMetrics
+import android.view.Display
 import android.util.Patterns
 import com.yashmaurya.roadbrowser.model.AppThemeMode
 import com.yashmaurya.roadbrowser.model.SearchEngine
@@ -281,8 +282,12 @@ object BrowserPreferences {
         if (scalePercent == DEFAULT_GLOBAL_SCALE_PERCENT) return base
 
         val configuration = Configuration(base.resources.configuration)
+        // The phone's stable density only describes the phone's own screen. On the car display
+        // it would blow the UI up to phone size, so there the display's own density is scaled.
+        val onPhoneScreen = runCatching { base.display?.displayId ?: Display.DEFAULT_DISPLAY }
+            .getOrDefault(Display.DEFAULT_DISPLAY) == Display.DEFAULT_DISPLAY
         val stableDensity = DisplayMetrics.DENSITY_DEVICE_STABLE
-            .takeIf { it > 0 }
+            .takeIf { it > 0 && onPhoneScreen }
             ?: configuration.densityDpi.takeIf { it > 0 }
             ?: base.resources.displayMetrics.densityDpi
 

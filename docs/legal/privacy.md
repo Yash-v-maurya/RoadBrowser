@@ -22,6 +22,7 @@ To work as a browser, RoadBrowser keeps the following in its private storage on 
 - **Site icons** downloaded for your quick links and bookmarks.
 - **Website data** that sites store through Android System WebView: cookies, cache and local storage.
 - **A reference to your start-page background photo**, if you picked one. The app stores a link to the image you chose, not a copy.
+- **Crash reports.** If the app crashes, the error details (app version, Android version, phone model and the technical error) are saved on your phone. They are only sent if you tap **Share crash report** in Settings and pick where to send them.
 
 ## 3. Connections the app makes
 
@@ -85,6 +86,7 @@ In the terms used by the Google Play data safety form:
 - **Data shared with third parties:** none.
 - **Encryption in transit:** not applicable, because no data is collected. The app's own update check uses HTTPS.
 - **Data deletion:** you can delete all data in the app, or by clearing the app's storage.
+- Crash reports you choose to share are sent by you, through the app you pick, and are not collected automatically.
 
 ## 11. Changes to this policy
 
@@ -94,4 +96,4 @@ When this policy changes, the new version ships with the app and is published in
 
 Questions about this policy: open an issue at [github.com/Yash-v-maurya/RoadBrowser/issues](https://github.com/Yash-v-maurya/RoadBrowser/issues).
 
-See also: [Terms of Use](terms.md) · [Driving Safety](driving-safety.md) · [Open-Source Notices](notices.md)
+See also: [Android Auto Setup](android-auto-setup.md) · [Terms of Use](terms.md) · [Driving Safety](driving-safety.md) · [Open-Source Notices](notices.md)

@@ -26,6 +26,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.yashmaurya.roadbrowser.AppConstants
 import com.yashmaurya.roadbrowser.R
 import com.yashmaurya.roadbrowser.data.BrowserPreferences
+import com.yashmaurya.roadbrowser.data.CrashLog
 import com.yashmaurya.roadbrowser.model.AppThemeMode
 import com.yashmaurya.roadbrowser.model.SearchEngine
 import com.yashmaurya.roadbrowser.model.UserAgentProfile
@@ -419,6 +420,49 @@ object SettingsViews {
         headerInner.addView(backBtn)
         headerCard.addView(headerInner)
         container.addView(headerCard)
+
+        // First in the list: people who can't find RoadBrowser in the car come here looking.
+        val helpCard = createStyledCard()
+        val helpInner = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(cardPadWide, cardPadV, cardPadWide, cardPadV)
+        }
+        helpInner.addView(createSectionTitle(context.getString(R.string.settings_help_title), R.drawable.devices_other_24px, spaceBelow = true))
+        helpInner.addView(TextView(context).apply {
+            text = context.getString(R.string.settings_help_description)
+            applyRole(roleBodyMedium)
+            setTextColor(onSurfaceColor)
+            setPadding(0, 0, 0, sectionSpacing)
+        })
+        helpInner.addView(createListButton(R.id.carSetupButton, context.getString(R.string.settings_car_setup), R.drawable.settings_24px).apply {
+            setOnClickListener {
+                val intent = CarSetupActivity.intent(context)
+                if (context !is android.app.Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            }
+        })
+        val crashReport = CrashLog.read(context)
+        helpInner.addView(createListButton(
+            R.id.shareCrashReportButton,
+            context.getString(if (crashReport != null) R.string.settings_share_crash_report else R.string.settings_no_crash_report),
+            R.drawable.share
+        ).apply {
+            isEnabled = crashReport != null
+            alpha = if (crashReport != null) 1f else 0.6f
+            setOnClickListener {
+                // Only ever leaves the phone through the share sheet, when the user sends it.
+                val report = CrashLog.read(context) ?: return@setOnClickListener
+                val send = Intent(Intent.ACTION_SEND)
+                    .setType("text/plain")
+                    .putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.crash_report_subject))
+                    .putExtra(Intent.EXTRA_TEXT, report)
+                val chooser = Intent.createChooser(send, context.getString(R.string.settings_share_crash_report))
+                if (context !is android.app.Activity) chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(chooser)
+            }
+        })
+        helpCard.addView(helpInner)
+        addSection(helpCard, 2)
 
         val appearanceCard = createStyledCard()
         val appearanceInner = LinearLayout(context).apply {

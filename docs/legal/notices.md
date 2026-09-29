@@ -34,4 +34,4 @@ The Shields blocklist was compiled for RoadBrowser and ships with the app.
 
 Android, Android Auto, Google and YouTube are trademarks of Google LLC. Other product and company names belong to their owners. RoadBrowser is an independent project. It is not affiliated with, sponsored by or endorsed by Google or by any car maker.
 
-See also: [Privacy Policy](privacy.md) · [Terms of Use](terms.md) · [Driving Safety](driving-safety.md)
+See also: [Android Auto Setup](android-auto-setup.md) · [Privacy Policy](privacy.md) · [Terms of Use](terms.md) · [Driving Safety](driving-safety.md)

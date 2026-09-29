@@ -57,4 +57,4 @@ These terms may be updated. The new version ships with the app and is published 
 
 Questions about these terms: open an issue at [github.com/Yash-v-maurya/RoadBrowser/issues](https://github.com/Yash-v-maurya/RoadBrowser/issues).
 
-See also: [Privacy Policy](privacy.md) · [Driving Safety](driving-safety.md) · [Open-Source Notices](notices.md)
+See also: [Android Auto Setup](android-auto-setup.md) · [Privacy Policy](privacy.md) · [Driving Safety](driving-safety.md) · [Open-Source Notices](notices.md)

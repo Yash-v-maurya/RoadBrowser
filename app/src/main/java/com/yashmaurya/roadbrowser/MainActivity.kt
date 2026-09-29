@@ -104,6 +104,10 @@ class MainActivity : AppCompatActivity() {
     private var currentUserAgentProfile: UserAgentProfile = UserAgentProfile.ANDROID_CHROME
     private var shouldForceSessionRestore: Boolean = false
 
+    // False when Android System WebView couldn't be loaded; the activity then only shows the
+    // explanation and every lifecycle callback below skips the browser.
+    private var isBrowserReady: Boolean = false
+
     // True only while onPause actually suspended the active WebView, so onResume resumes exactly
     // what it paused instead of blindly resuming a tab the TabManager already owns.
     private var isActiveWebViewPausedForBackground: Boolean = false
@@ -145,6 +149,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!isWebViewAvailable()) {
+            showWebViewUnavailable()
+            return
+        }
+        isBrowserReady = true
 
         shouldForceSessionRestore = (savedInstanceState != null)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -170,6 +179,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (!isBrowserReady) return
         if (handleMediaSearchIntent(intent)) return
         val url = navigationManager.extractBrowsableUrl(intent)
         if (url != null) {
@@ -189,6 +199,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (!isBrowserReady) return
         if (isActiveWebViewPausedForBackground) {
             isActiveWebViewPausedForBackground = false
             webView?.onResume()
@@ -207,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         // constantly (navigation prompts, the launcher, the assistant) and collapsing the video
         // player every time makes it unusable. Fullscreen is torn down in onDestroy, on an
         // explicit back press and when the page itself leaves fullscreen.
-        if (!BrowserPreferences.isBackgroundAudioEnabled(this)) {
+        if (isBrowserReady && !BrowserPreferences.isBackgroundAudioEnabled(this)) {
             webView?.onPause()
             isActiveWebViewPausedForBackground = true
         }
@@ -215,6 +226,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        if (!isBrowserReady) {
+            super.onDestroy()
+            return
+        }
         // Leaves playback that Android Auto started in the car player running.
         com.yashmaurya.roadbrowser.media.MediaPlaybackService.onBrowserClosed()
         uiManager.exitFullscreen()
@@ -233,10 +248,35 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (!isBrowserReady) return
         permissionManager.handleRequestPermissionsResult(requestCode, grantResults) { granted ->
             val speechTab = tabManager.browserTabs.firstOrNull { it.id == permissionManager.pendingSpeechBridgeTabId }
             speechTab?.speechBridge?.onPermissionResult(granted)
         }
+    }
+
+    /**
+     * Every page is drawn by Android System WebView. While it is being updated, or if it has been
+     * disabled or uninstalled, creating a WebView throws and the app would crash on launch.
+     */
+    private fun isWebViewAvailable(): Boolean = runCatching {
+        androidx.webkit.WebViewCompat.getCurrentWebViewPackage(this) != null &&
+            android.webkit.WebSettings.getDefaultUserAgent(this).isNotBlank()
+    }.getOrDefault(false)
+
+    private fun showWebViewUnavailable() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.webview_unavailable_title)
+            .setMessage(R.string.webview_unavailable_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.webview_unavailable_update) { _, _ ->
+                val store = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$WEBVIEW_PACKAGE"))
+                val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$WEBVIEW_PACKAGE"))
+                runCatching { startActivity(store) }.onFailure { runCatching { startActivity(web) } }
+                finish()
+            }
+            .setNegativeButton(R.string.webview_unavailable_close) { _, _ -> finish() }
+            .show()
     }
 
     private fun setupUi() {
@@ -786,5 +826,9 @@ class MainActivity : AppCompatActivity() {
         override fun onVersionInfoReceived(latestUrl: String, tagName: String) {
             latestReleaseUrl = latestUrl
         }
+    }
+
+    private companion object {
+        const val WEBVIEW_PACKAGE = "com.google.android.webview"
     }
 }

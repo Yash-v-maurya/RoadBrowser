@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import androidx.annotation.VisibleForTesting
@@ -33,6 +34,7 @@ object BackgroundWebPlayer {
         fun onPlaybackChanged(playing: Boolean, title: String, artist: String, pageUrl: String?)
     }
 
+    private const val TAG = "BackgroundWebPlayer"
     private const val VIEWPORT_WIDTH_PX = 1280
     private const val VIEWPORT_HEIGHT_PX = 720
 
@@ -54,12 +56,19 @@ object BackgroundWebPlayer {
     internal val loadedWebView: WebView?
         get() = webView
 
-    fun play(context: Context, url: String) {
-        val view = webView ?: create(context.applicationContext).also { webView = it }
+    /** Loads [url]; false when no WebView could be created (Android System WebView missing). */
+    fun play(context: Context, url: String): Boolean {
+        val view = webView
+            ?: runCatching { create(context.applicationContext) }
+                .onFailure { Log.w(TAG, "Could not create the background WebView", it) }
+                .getOrNull()
+                ?.also { webView = it }
+            ?: return false
         isPlaying = false
         handler.removeCallbacks(autoplayNudge)
         view.prepareBrowserIdentityFor(url)
         view.loadUrl(url)
+        return true
     }
 
     /** Sends a Media Session action (`play`, `pause`, `nexttrack`, …) to the loaded page. */
