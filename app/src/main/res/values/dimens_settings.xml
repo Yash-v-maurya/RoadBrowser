@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Metrics for the settings screen, the tab/bookmark lists and the custom dialogs.
+    Overridden by available-width qualifiers:
+      w600dp  - tablets and the smallest head units: 56dp reach targets, 2-up lists
+      w1000dp - wide head units: settings splits into two columns
+      w1240dp - 3-up lists
+      w1600dp - 4-up lists
+-->
+<resources>
+
+    <!-- Settings layout -->
+    <integer name="settings_column_count">1</integer>
+    <dimen name="settings_page_padding_horizontal">16dp</dimen>
+    <dimen name="settings_page_padding_bottom">24dp</dimen>
+    <dimen name="settings_column_gap">16dp</dimen>
+    <dimen name="settings_card_spacing">16dp</dimen>
+    <dimen name="settings_card_corner_radius">18dp</dimen>
+    <dimen name="settings_card_padding_horizontal">8dp</dimen>
+    <dimen name="settings_card_padding_vertical">16dp</dimen>
+    <dimen name="settings_card_padding_wide">16dp</dimen>
+    <dimen name="settings_header_padding">20dp</dimen>
+
+    <!-- Section headers -->
+    <dimen name="settings_section_icon_size">20dp</dimen>
+    <dimen name="settings_section_icon_gap">10dp</dimen>
+    <dimen name="settings_section_spacing">8dp</dimen>
+
+    <!-- Rows: label + value, always reachable -->
+    <dimen name="settings_row_min_height">48dp</dimen>
+    <dimen name="settings_row_padding_horizontal">12dp</dimen>
+    <dimen name="settings_row_padding_vertical">10dp</dimen>
+    <dimen name="settings_row_icon_size">24dp</dimen>
+    <dimen name="settings_row_icon_gap">16dp</dimen>
+    <dimen name="settings_row_corner_radius">12dp</dimen>
+    <dimen name="settings_row_value_spacing">2dp</dimen>
+    <dimen name="settings_button_min_height">48dp</dimen>
+
+    <!-- Tab and bookmark lists -->
+    <integer name="list_span_count">1</integer>
+    <dimen name="list_item_min_height">56dp</dimen>
+    <dimen name="list_item_padding">12dp</dimen>
+    <dimen name="list_item_gap_horizontal">0dp</dimen>
+    <dimen name="list_item_gap_vertical">8dp</dimen>
+    <dimen name="list_item_icon_size">40dp</dimen>
+    <dimen name="list_item_action_size">48dp</dimen>
+    <dimen name="list_item_action_icon_size">22dp</dimen>
+
+    <!-- Custom dialogs -->
+    <dimen name="dialog_padding">20dp</dimen>
+    <dimen name="dialog_button_min_height">48dp</dimen>
+    <dimen name="dialog_button_gap">8dp</dimen>
+
+</resources>

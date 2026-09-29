@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 600dp up: the full seven-control row fits without squeezing the address pill. -->
+<resources>
+    <bool name="toolbar_show_pill_go">true</bool>
+    <bool name="toolbar_show_home">true</bool>
+    <bool name="toolbar_show_secondary_actions">true</bool>
+</resources>

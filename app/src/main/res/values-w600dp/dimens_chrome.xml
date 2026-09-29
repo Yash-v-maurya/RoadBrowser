@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Baseline Android Auto head unit: 800x480dp at 160dpi. Everything fits in one row -
+     Back, Home, pill, Reload, Bookmarks, Tabs, Menu - with ~320dp left for the address.
+     The strip is 66dp, under 14% of a 480dp-tall screen. Targets grow to 52dp because this
+     is a screen you hit while moving; the sheet ceiling drops because the screen is short. -->
+<resources>
+    <dimen name="toolbar_chrome_height">66dp</dimen>
+    <dimen name="toolbar_chrome_side_padding">12dp</dimen>
+    <dimen name="toolbar_chrome_gap">8dp</dimen>
+    <dimen name="toolbar_chrome_button_size">52dp</dimen>
+    <dimen name="toolbar_chrome_icon_size">26dp</dimen>
+    <dimen name="toolbar_chrome_pill_height">54dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_start">14dp</dimen>
+    <dimen name="toolbar_chrome_lock_icon_size">20dp</dimen>
+    <dimen name="toolbar_chrome_pill_button_icon_size">22dp</dimen>
+    <dimen name="toolbar_chrome_address_text_size">17sp</dimen>
+    <dimen name="toolbar_chrome_badge_size">22dp</dimen>
+    <dimen name="menu_sheet_max_height">520dp</dimen>
+    <dimen name="sheet_handle_padding_vertical">12dp</dimen>
+</resources>

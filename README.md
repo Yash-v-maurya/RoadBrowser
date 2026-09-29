@@ -31,14 +31,15 @@ Requires **Android 15 or later** on the phone. No special installer is needed; i
 - **Brave Search + Shields.** Brave Search is the default engine (Google and DuckDuckGo are also available). Shields blocks known ad and tracker domains with a bundled blocklist and shows a live blocked count in Settings.
 - **YouTube compatibility mode.** Forces the mobile YouTube interface and keeps playback-critical requests unblocked so videos load reliably.
 - **Background audio playback.** Video and audio keep playing when the browser is not in the foreground, for example while Maps or the launcher is shown. A page shim keeps `document.hidden` reporting "visible" so sites like YouTube don't pause themselves.
+- **Android Auto media screen.** RoadBrowser also shows up in Android Auto's media section, which stays usable while the car moves. It lists the page you last played, your quick links and your bookmarks; picking one plays it in the background with nothing shown on the car screen.
 - **MediaSession foreground service.** While something is playing, RoadBrowser holds a real media session. Steering-wheel next/previous/play/pause buttons and the phone's media notification control the page, and the OS won't freeze the browser once Maps has covered it for a while.
 - **Desktop / mobile user agent.** Toggle desktop mode per session, and pick between an Android Chrome or Safari identity in Settings.
 - **Voice input.** Web pages that use the Web Speech API get the phone's speech recognizer, with per-host microphone permission prompts.
 - **SSL and cleartext handling.** Certificate problems show a clear warning with the reason and a "go back" default; plain-HTTP sites ask before loading.
-- **Light, dark and auto themes.** Warm-white light theme by default, a charcoal dark theme, Manrope typography throughout, plus an optional beta setting that asks WebView to darken web pages algorithmically.
+- **Light, dark and auto themes.** A cream light theme by default, a warm charcoal dark theme, Overpass typography throughout, plus an optional beta setting that asks WebView to darken web pages algorithmically.
 - **Global display scale** (40 to 200 percent) so the UI and page content fit your screen.
 - **Fullscreen and DRM video.** Fullscreen playback survives brief focus loss, and Widevine L3 protected content works.
-- **No analytics, no telemetry.** Nothing phones home; the only traffic is the pages you open and their icons.
+- **No analytics, no telemetry.** Nothing phones home; the only traffic is the pages you open and their icons. See the [Privacy Policy](docs/legal/privacy.md).
 
 ---
 
@@ -58,9 +59,11 @@ A longer walkthrough, including the adb route and OnePlus/ColorOS battery settin
 
 ---
 
-## Recommended settings for video while driving
+## Listening while driving
 
-Both of these are **on by default**; you only need to check them if you've changed something.
+Android Auto covers the browser with a "restricted while driving" screen as soon as the car moves, and RoadBrowser doesn't get around it. Audio keeps going: anything you started while parked carries on, and RoadBrowser's entry in Android Auto's **media** section lets you pick a quick link or bookmark and control playback with Android Auto's player or the steering wheel. See [Driving Safety](docs/legal/driving-safety.md).
+
+Both of these settings are **on by default**; you only need to check them if you've changed something.
 
 - **Settings > Media & playback > YouTube compatibility:** on. Mobile YouTube plays reliably on the head unit; the desktop site does not.
 - **Settings > Media & playback > Keep audio playing in background:** on. This is what keeps a video going when you switch to Maps or the launcher, and what turns on the media session so the **steering-wheel next / previous / play / pause buttons** and the phone's media notification control playback.
@@ -143,6 +146,17 @@ app/build/renamedApks/release/RoadBrowser-<version>.apk
 ## Security
 
 The only official source for RoadBrowser is **https://github.com/Yash-v-maurya/RoadBrowser**. Download APKs only from that repository's Releases page (or through Obtainium pointed at it). Any other site offering "RoadBrowser" is not affiliated with this project, and its APKs may be modified.
+
+---
+
+## Legal
+
+- [Privacy Policy](docs/legal/privacy.md): no accounts, no analytics, nothing sent to the developer.
+- [Terms of Use](docs/legal/terms.md)
+- [Driving Safety](docs/legal/driving-safety.md)
+- [Open-Source Notices](docs/legal/notices.md)
+
+The same pages ship inside the app under **Settings > Legal** and open offline. They are generated from the Markdown files with `python scripts/build_legal.py`.
 
 ---
 

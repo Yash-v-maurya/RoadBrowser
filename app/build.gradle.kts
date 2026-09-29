@@ -17,8 +17,8 @@ android {
         applicationId = "com.yashmaurya.roadbrowser"
         minSdk = 35
         targetSdk = 37
-        versionCode = 10
-        versionName = "2.2"
+        versionCode = 11
+        versionName = "2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -64,6 +64,20 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                it.testLogging {
+                    events("passed", "failed", "skipped")
+                    showStandardStreams = true
+                    exceptionFormat =
+                        org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                }
+            }
+        }
     }
 
     androidComponents {
@@ -117,6 +131,8 @@ dependencies {
     implementation("com.github.woheller69:FreeDroidWarn:V1.+")
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

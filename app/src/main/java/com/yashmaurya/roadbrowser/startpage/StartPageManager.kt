@@ -1,7 +1,9 @@
 package com.yashmaurya.roadbrowser.startpage
 
+import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -52,6 +54,14 @@ class StartPageManager(
         fun resolveReadableTextColor(bg: Int, pr: Int, fb: Int): Int
     }
 
+    private companion object {
+        /**
+         * Spans that divide [BrowserPreferences.MAX_START_PAGE_SITES] evenly, widest first.
+         * Restricting the grid to these keeps the last row full instead of ragged.
+         */
+        private val TIDY_SPANS = listOf(6, 3, 2)
+    }
+
     var isShowingStartPage: Boolean = false
     var isStartPagePhotoOnlyMode: Boolean = false
     
@@ -79,7 +89,69 @@ class StartPageManager(
 
     private var backgroundLoadJob: Job? = null
 
+    private var lastConfigurationSignature: Int = 0
+
+    /**
+     * The activity handles orientation and screen-size changes itself, so nothing is recreated
+     * on a rotation or a window resize: the tiles keep the dimensions they were inflated with
+     * and the grid keeps the span it was given. This listens for the change and re-applies
+     * everything the start page sizes at runtime.
+     */
+    private val configurationCallbacks = object : ComponentCallbacks {
+        override fun onConfigurationChanged(newConfig: Configuration) {
+            val signature = configurationSignature(newConfig)
+            if (signature == lastConfigurationSignature) {
+                return
+            }
+            lastConfigurationSignature = signature
+            // Posted so the activity's own resources have picked up the new configuration
+            // before anything is measured against it.
+            binding.startPageRoot.post { reapplyStartPageMetrics() }
+        }
+
+        override fun onLowMemory() {}
+    }
+
+    init {
+        lastConfigurationSignature = configurationSignature(activity.resources.configuration)
+        activity.registerComponentCallbacks(configurationCallbacks)
+    }
+
+    private fun configurationSignature(config: Configuration): Int {
+        var result = config.screenWidthDp
+        result = 31 * result + config.screenHeightDp
+        result = 31 * result + config.smallestScreenWidthDp
+        result = 31 * result + config.orientation
+        result = 31 * result + config.densityDpi
+        result = 31 * result + (config.uiMode and Configuration.UI_MODE_NIGHT_MASK)
+        return result
+    }
+
+    /**
+     * Re-applies everything that is resolved per qualifier at runtime. The tiles carry their
+     * own dimensions from the inflated layout, so the view holders have to be rebuilt rather
+     * than merely rebound.
+     */
+    private fun reapplyStartPageMetrics() {
+        val grid = binding.startPageQuickLinksContainer
+        if (grid.adapter != null) {
+            grid.adapter = null
+            grid.recycledViewPool.clear()
+            grid.layoutManager = GridLayoutManager(activity, computeGridMetrics().span)
+            grid.adapter = startPageAdapter
+        }
+        applyGridMetrics()
+        applyResumeCardDensity()
+        if (binding.startPageResumeCard.isVisible) {
+            refreshStartPageResumeCard()
+        }
+        // The gradient's blob radii are in px, so it is rebuilt against the new density.
+        cachedStartPageGradientSignature = 0
+        applyDynamicStartPageGradientBackground()
+    }
+
     fun onDestroy() {
+        activity.unregisterComponentCallbacks(configurationCallbacks)
         backgroundLoadJob?.cancel()
         backgroundLoadJob = null
         loadedStartPageBackgroundBitmap?.recycle()
@@ -93,7 +165,7 @@ class StartPageManager(
         }
         
         binding.startPageQuickLinksContainer.apply {
-            layoutManager = GridLayoutManager(activity, quickLinkSpanCount())
+            layoutManager = GridLayoutManager(activity, computeGridMetrics().span)
             adapter = startPageAdapter
         }
 
@@ -109,13 +181,53 @@ class StartPageManager(
         touchHelper.attachToRecyclerView(binding.startPageQuickLinksContainer)
     }
 
-    private fun quickLinkSpanCount(): Int {
+    private data class GridMetrics(val span: Int, val sidePaddingPx: Int)
+
+    /**
+     * Column count and gutters for the quick-link grid.
+     *
+     * Span is derived from the width actually available to the grid and the per-qualifier
+     * target tile width, never hardcoded: take the most columns that still leave every tile
+     * at least [R.dimen.start_page_grid_min_tile_width] wide. Only spans that divide the six
+     * slots evenly are allowed, so the grid always ends on a full row instead of a ragged one.
+     *
+     * On very wide screens the cell is capped at [R.dimen.start_page_grid_max_tile_width] and
+     * the leftover width becomes symmetric padding, so an ultrawide unit gets a centred block
+     * of readable tiles rather than a row of stamps or four billboards.
+     */
+    private fun computeGridMetrics(): GridMetrics {
         val resources = activity.resources
         val density = resources.displayMetrics.density
-        val pagePadding = resources.getDimension(R.dimen.start_page_padding) / density
-        val availableDp = resources.configuration.screenWidthDp - 2 * pagePadding - 20
-        val tileMinDp = resources.getDimension(R.dimen.start_page_tile_min_width) / density
-        return (availableDp / tileMinDp).toInt().coerceIn(2, 4)
+        val pagePaddingDp = resources.getDimension(R.dimen.start_page_padding) / density
+        val availableDp = (resources.configuration.screenWidthDp - 2f * pagePaddingDp).coerceAtLeast(1f)
+        val minTileDp = (resources.getDimension(R.dimen.start_page_grid_min_tile_width) / density)
+            .coerceAtLeast(1f)
+        val maxTileDp = (resources.getDimension(R.dimen.start_page_grid_max_tile_width) / density)
+            .coerceAtLeast(minTileDp)
+
+        val span = TIDY_SPANS.firstOrNull { availableDp / it >= minTileDp } ?: TIDY_SPANS.last()
+        val cellDp = (availableDp / span).coerceAtMost(maxTileDp)
+        val sidePaddingDp = ((availableDp - cellDp * span) / 2f).coerceAtLeast(0f)
+        return GridMetrics(span, (sidePaddingDp * density).toInt())
+    }
+
+    private fun applyGridMetrics() {
+        val metrics = computeGridMetrics()
+        val grid = binding.startPageQuickLinksContainer
+        (grid.layoutManager as? GridLayoutManager)?.let { manager ->
+            if (manager.spanCount != metrics.span) {
+                manager.spanCount = metrics.span
+                manager.requestLayout()
+            }
+        }
+        if (grid.paddingStart != metrics.sidePaddingPx || grid.paddingEnd != metrics.sidePaddingPx) {
+            grid.setPaddingRelative(
+                metrics.sidePaddingPx,
+                grid.paddingTop,
+                metrics.sidePaddingPx,
+                grid.paddingBottom
+            )
+        }
     }
 
     private fun syncBookmarksFromSlots(slotUrls: List<String>) {
@@ -199,6 +311,7 @@ class StartPageManager(
 
     fun refreshStartPage() {
         setupRecyclerView()
+        applyGridMetrics()
         refreshStartPageQuickLinks()
         refreshStartPageBackground()
         refreshStartPageResumeCard()
@@ -206,17 +319,17 @@ class StartPageManager(
     }
 
     private fun setupStartPageCardGlassBackground() {
-        val cardBg = callbacks.resolveThemeColor(com.google.android.material.R.attr.colorSurfaceContainerLow)
-        val glassBg = androidx.core.graphics.ColorUtils.setAlphaComponent(cardBg, 120)
-        
-        binding.startPageCard.setCardBackgroundColor(glassBg)
-        val outlineColor = callbacks.resolveThemeColor(com.google.android.material.R.attr.colorOutline)
-        binding.startPageCard.strokeColor = androidx.core.graphics.ColorUtils.setAlphaComponent(outlineColor, 80)
-        binding.startPageCard.strokeWidth = (1.5f * activity.resources.displayMetrics.density).toInt()
+        // The quick-links grid carries no frame of its own — the tiles are the structure. Only
+        // the resume card is a surface, so it reads as one object rather than part of the grid.
+        binding.startPageCard.setCardBackgroundColor(android.graphics.Color.TRANSPARENT)
+        binding.startPageCard.strokeWidth = 0
 
-        binding.startPageResumeCard.setCardBackgroundColor(glassBg)
-        binding.startPageResumeCard.strokeColor = androidx.core.graphics.ColorUtils.setAlphaComponent(outlineColor, 80)
-        binding.startPageResumeCard.strokeWidth = (1.5f * activity.resources.displayMetrics.density).toInt()
+        val outlineColor = callbacks.resolveThemeColor(com.google.android.material.R.attr.colorOutlineVariant)
+        binding.startPageResumeCard.setCardBackgroundColor(
+            callbacks.resolveThemeColor(com.google.android.material.R.attr.colorSurfaceContainerLowest)
+        )
+        binding.startPageResumeCard.strokeColor = outlineColor
+        binding.startPageResumeCard.strokeWidth = activity.resources.displayMetrics.density.toInt()
     }
 
     fun refreshStartPageBackground() {
@@ -355,18 +468,43 @@ class StartPageManager(
             return
         }
         val url = lastUrl!!
+        applyResumeCardDensity()
         binding.startPageResumeTitle.text = bookmarkManager.displayTitleForUrl(url)
         binding.startPageResumeUrl.text = url
+
+        val resources = activity.resources
+        val density = resources.displayMetrics.density
+        val iconSizeDp = resources.getDimension(R.dimen.start_page_resume_icon_size) / density
         binding.startPageResumeIconContainer.removeAllViews()
         binding.startPageResumeIconContainer.addView(
             bookmarkManager.createSiteIconBadge(
                 url = url,
-                sizeDp = 48f,
-                cornerRadiusDp = 14f,
-                paddingDp = 8f,
+                sizeDp = iconSizeDp,
+                cornerRadiusDp = iconSizeDp * 0.3f,
+                paddingDp = iconSizeDp * 0.17f,
                 backgroundColor = callbacks.resolveThemeColor(com.google.android.material.R.attr.colorPrimaryContainer)
             )
         )
+    }
+
+    /**
+     * On a short car screen the resume card competes with the grid, so it collapses to a
+     * single line with a smaller badge and a tighter row; everywhere else it stays full size.
+     */
+    private fun applyResumeCardDensity() {
+        val resources = activity.resources
+        val compact = resources.getBoolean(R.bool.start_page_resume_compact)
+        // Compact leaves exactly one line: the site title. The caption and the URL are what the
+        // card can afford to lose when the grid needs the height.
+        binding.startPageResumeCaption.isVisible = !compact
+        binding.startPageResumeUrl.isVisible = !compact
+        binding.startPageResumeCard.radius = resources.getDimension(R.dimen.start_page_resume_corner)
+
+        (binding.startPageResumeIconContainer.parent as? android.view.ViewGroup)?.let { row ->
+            row.minimumHeight = resources.getDimensionPixelSize(R.dimen.start_page_resume_row_min_height)
+            val paddingV = resources.getDimensionPixelSize(R.dimen.start_page_resume_padding_v)
+            row.setPaddingRelative(row.paddingStart, paddingV, row.paddingEnd, paddingV)
+        }
     }
 
     fun handleStartPageBackgroundPicked(uri: Uri?) {

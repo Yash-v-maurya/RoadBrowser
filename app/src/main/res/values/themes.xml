@@ -77,60 +77,60 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
-    <!-- Typography: Manrope everywhere, weight by role -->
+    <!-- Typography: Overpass everywhere, weight by role -->
     <style name="TextAppearance.RoadBrowser.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
-        <item name="android:textFontWeight">800</item>
+        <item name="android:textFontWeight">700</item>
         <item name="android:letterSpacing">-0.02</item>
     </style>
     <style name="TextAppearance.RoadBrowser.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
-        <item name="android:textFontWeight">800</item>
+        <item name="android:textFontWeight">700</item>
         <item name="android:letterSpacing">-0.02</item>
     </style>
     <style name="TextAppearance.RoadBrowser.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
-        <item name="android:textFontWeight">800</item>
-        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:letterSpacing">-0.015</item>
     </style>
     <style name="TextAppearance.RoadBrowser.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
         <item name="android:textFontWeight">700</item>
-        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:letterSpacing">-0.015</item>
     </style>
     <style name="TextAppearance.RoadBrowser.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
-        <item name="android:textFontWeight">700</item>
-        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">-0.01</item>
     </style>
     <style name="TextAppearance.RoadBrowser.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
-        <item name="android:textFontWeight">700</item>
-        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">-0.01</item>
     </style>
     <style name="TextAppearance.RoadBrowser.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
         <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:letterSpacing">-0.005</item>
     </style>
     <style name="TextAppearance.RoadBrowser.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
         <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="TextAppearance.RoadBrowser.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
         <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:letterSpacing">0.005</item>
     </style>
     <style name="TextAppearance.RoadBrowser.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
         <item name="fontFamily">@font/roadbrowser_sans</item>
@@ -148,25 +148,25 @@
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
         <item name="android:textFontWeight">400</item>
-        <item name="android:letterSpacing">0</item>
+        <item name="android:letterSpacing">0.005</item>
     </style>
     <style name="TextAppearance.RoadBrowser.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
-        <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
     <style name="TextAppearance.RoadBrowser.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
-        <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:letterSpacing">0.015</item>
     </style>
     <style name="TextAppearance.RoadBrowser.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
         <item name="fontFamily">@font/roadbrowser_sans</item>
         <item name="android:fontFamily">@font/roadbrowser_sans</item>
-        <item name="android:textFontWeight">600</item>
-        <item name="android:letterSpacing">0</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:letterSpacing">0.02</item>
     </style>
     <style name="Widget.RoadBrowser.TextView" parent="Widget.MaterialComponents.TextView">
         <item name="android:fontFamily">@font/roadbrowser_sans</item>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Phone portrait, 360-479dp. Home stays in the menu so the pill keeps ~100dp of readable
+     address; the pill's Go button earns its place here because this is a typing screen. -->
+<resources>
+    <dimen name="toolbar_chrome_side_padding">8dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_start">12dp</dimen>
+    <dimen name="toolbar_chrome_lock_icon_size">20dp</dimen>
+    <dimen name="toolbar_chrome_address_text_size">16sp</dimen>
+</resources>

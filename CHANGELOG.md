@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.3 - 2026-09-29
+
+Version code 11.
+
+### Added
+
+- **Android Auto media screen.** RoadBrowser now also appears in Android Auto's media section, which stays usable while the car is moving (the browser itself stays behind Android Auto's "restricted while driving" screen). The list offers the page you last played, your quick links and your bookmarks; picking one plays it in a windowless background player, so nothing from the page is ever drawn on the car screen. Play, pause, next and previous work from Android Auto's player and the steering wheel. Only pages in that list can be played, and only Android Auto, the system media controls and RoadBrowser itself can read it.
+- **Voice requests.** "Play *name* on RoadBrowser" plays the best-matching quick link or bookmark; "Play RoadBrowser" resumes the last page.
+- **Legal pages.** Privacy policy, terms of use, driving safety and open-source notices, readable offline under **Settings > Legal** and in `docs/legal/`. `scripts/build_legal.py` regenerates the in-app copies from the Markdown.
+- Unit tests for the Android Auto list, the media service's hand-over between the browser tabs and the car player, the legal pages, and layout fit across screen sizes (Robolectric).
+
+### Changed
+
+- New look: cream paper, warm ink and an instrument-cluster amber accent, set in Overpass, a typeface drawn from highway signage (replaces Manrope).
+- The toolbar and start page resize live when the window changes (split screen, different head units) instead of keeping the size they launched with, and the quick-link grid always divides evenly.
+- Closing the browser no longer stops audio that was started from Android Auto's media screen.
+
 ## 2.2 (RoadBrowser) - 2026-09-21
 
 First release under the RoadBrowser name. Version code 10.

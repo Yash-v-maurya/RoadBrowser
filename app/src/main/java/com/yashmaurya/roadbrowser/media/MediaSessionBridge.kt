@@ -2,6 +2,8 @@ package com.yashmaurya.roadbrowser.media
 
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import androidx.webkit.WebViewCompat
+import androidx.webkit.WebViewFeature
 
 /**
  * Page-side half of the media session integration.
@@ -116,6 +118,18 @@ class MediaSessionBridge(
                 } catch(e) {}
             })();
         """.trimIndent()
+
+        /**
+         * Wires a WebView up to report playback through [onStateChanged]. Installs the shim at
+         * document start where supported so the page's own `setActionHandler` calls are
+         * captured; onPageFinished re-injects (idempotently) for WebViews without the feature.
+         */
+        fun attach(webView: WebView, onStateChanged: (playing: Boolean, title: String, artist: String) -> Unit) {
+            webView.addJavascriptInterface(MediaSessionBridge(onStateChanged), JS_OBJECT_NAME)
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+                WebViewCompat.addDocumentStartJavaScript(webView, PAGE_SHIM_JS, setOf("*"))
+            }
+        }
 
         /** Installs [PAGE_SHIM_JS]; idempotent per document. */
         fun inject(webView: WebView) {

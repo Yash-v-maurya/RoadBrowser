@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Open-Source Notices · RoadBrowser</title>
+<style>
+  /* First source serves the download site, second the copy bundled in the app. */
+  @font-face {
+    font-family: "Overpass";
+    src: url("../assets/overpass.ttf") format("truetype-variations"),
+         url("file:///android_res/font/overpass.ttf") format("truetype-variations");
+    font-weight: 300 700;
+    font-display: swap;
+  }
+  :root {
+    --paper: #ede3cf;
+    --card: #faf6ec;
+    --ink: #1b1714;
+    --ink-muted: #5d5445;
+    --rule: #c9b894;
+    --amber: #8a5a0e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14120f;
+      --card: #1b1815;
+      --ink: #f2ead9;
+      --ink-muted: #d0c7b5;
+      --rule: #4e483e;
+      --amber: #e3b25c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Overpass", system-ui, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 16px 56px; }
+  header { padding: 28px 0 0; }
+  .brand { font-weight: 700; letter-spacing: -0.01em; color: var(--ink-muted); }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+  nav a {
+    color: var(--ink); text-decoration: none; font-weight: 600; font-size: .95rem;
+    padding: 9px 16px; border: 1px solid var(--rule); border-radius: 999px; background: var(--card);
+  }
+  nav a[aria-current="page"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .roadrule {
+    height: 5px; margin: 22px 0 0; border-radius: 3px; opacity: .85;
+    background: repeating-linear-gradient(90deg, var(--amber) 0 30px, transparent 30px 52px);
+  }
+  h1 { font-size: clamp(2rem, 6vw, 2.8rem); letter-spacing: -0.02em; line-height: 1.1; margin: 28px 0 12px; }
+  h2 { font-size: 1.25rem; margin: 34px 0 8px; padding-top: 18px; border-top: 1px solid var(--rule); }
+  p, li { max-width: 68ch; }
+  li { margin-bottom: 6px; }
+  a { color: var(--amber); overflow-wrap: anywhere; }
+  code { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+  tr:last-child td { border-bottom: 0; }
+  th { font-weight: 600; }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--ink-muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">RoadBrowser</div>
+    <nav><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="driving-safety.html">Driving safety</a><a href="notices.html" aria-current="page">Notices</a></nav>
+    <div class="roadrule"></div>
+  </header>
+  <main>
+<h1>Open-Source Notices</h1>
+<h2>RoadBrowser</h2>
+<p>Copyright © 2026 Yash V Maurya.</p>
+<p>RoadBrowser is free software: you can redistribute it and/or modify it under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License, version 3</a>, as published by the Free Software Foundation. It is distributed in the hope that it will be useful, but <strong>without any warranty</strong>; without even the implied warranty of merchantability or fitness for a particular purpose. The full licence text is in the <code>LICENSE</code> file of the source code at <a href="https://github.com/Yash-v-maurya/RoadBrowser">github.com/Yash-v-maurya/RoadBrowser</a>.</p>
+<h2>Overpass typeface</h2>
+<p>Copyright 2021 The Overpass Project Authors (<a href="https://github.com/RedHatOfficial/Overpass">github.com/RedHatOfficial/Overpass</a>).</p>
+<p>Licensed under the <a href="https://openfontlicense.org">SIL Open Font License, version 1.1</a>. The full licence text is in <code>docs/licenses/OFL_Overpass.txt</code> in the source code.</p>
+<h2>Libraries</h2>
+<p>RoadBrowser is built with these open-source libraries, all under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>:</p>
+<ul>
+<li>AndroidX (AppCompat, Core, Activity, Lifecycle, ConstraintLayout, WebKit, Car App)</li>
+<li>Material Components for Android</li>
+<li>Kotlin and kotlinx.serialization</li>
+<li>OkHttp</li>
+<li>ZXing</li>
+<li>FreeDroidWarn</li>
+<li>Play Services OSS Licenses</li>
+</ul>
+<p>The complete list, with each library's licence text, is in the app under <strong>Settings &gt; View open-source licenses</strong>.</p>
+<h2>Ad and tracker blocklist</h2>
+<p>The Shields blocklist was compiled for RoadBrowser and ships with the app.</p>
+<h2>Trademarks</h2>
+<p>Android, Android Auto, Google and YouTube are trademarks of Google LLC. Other product and company names belong to their owners. RoadBrowser is an independent project. It is not affiliated with, sponsored by or endorsed by Google or by any car maker.</p>
+  </main>
+  <footer>Made by Yash V Maurya · <a href="https://github.com/Yash-v-maurya/RoadBrowser">github.com/Yash-v-maurya/RoadBrowser</a></footer>
+</div>
+</body>
+</html>

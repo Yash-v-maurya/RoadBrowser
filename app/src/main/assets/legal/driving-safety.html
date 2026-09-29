@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Driving Safety · RoadBrowser</title>
+<style>
+  /* First source serves the download site, second the copy bundled in the app. */
+  @font-face {
+    font-family: "Overpass";
+    src: url("../assets/overpass.ttf") format("truetype-variations"),
+         url("file:///android_res/font/overpass.ttf") format("truetype-variations");
+    font-weight: 300 700;
+    font-display: swap;
+  }
+  :root {
+    --paper: #ede3cf;
+    --card: #faf6ec;
+    --ink: #1b1714;
+    --ink-muted: #5d5445;
+    --rule: #c9b894;
+    --amber: #8a5a0e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14120f;
+      --card: #1b1815;
+      --ink: #f2ead9;
+      --ink-muted: #d0c7b5;
+      --rule: #4e483e;
+      --amber: #e3b25c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Overpass", system-ui, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 16px 56px; }
+  header { padding: 28px 0 0; }
+  .brand { font-weight: 700; letter-spacing: -0.01em; color: var(--ink-muted); }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+  nav a {
+    color: var(--ink); text-decoration: none; font-weight: 600; font-size: .95rem;
+    padding: 9px 16px; border: 1px solid var(--rule); border-radius: 999px; background: var(--card);
+  }
+  nav a[aria-current="page"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .roadrule {
+    height: 5px; margin: 22px 0 0; border-radius: 3px; opacity: .85;
+    background: repeating-linear-gradient(90deg, var(--amber) 0 30px, transparent 30px 52px);
+  }
+  h1 { font-size: clamp(2rem, 6vw, 2.8rem); letter-spacing: -0.02em; line-height: 1.1; margin: 28px 0 12px; }
+  h2 { font-size: 1.25rem; margin: 34px 0 8px; padding-top: 18px; border-top: 1px solid var(--rule); }
+  p, li { max-width: 68ch; }
+  li { margin-bottom: 6px; }
+  a { color: var(--amber); overflow-wrap: anywhere; }
+  code { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+  tr:last-child td { border-bottom: 0; }
+  th { font-weight: 600; }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--ink-muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">RoadBrowser</div>
+    <nav><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="driving-safety.html" aria-current="page">Driving safety</a><a href="notices.html">Notices</a></nav>
+    <div class="roadrule"></div>
+  </header>
+  <main>
+<h1>Driving Safety</h1>
+<p><strong>Eyes on the road. The browser screen is for parked time and passengers.</strong></p>
+<h2>While the car is moving</h2>
+<p>Android Auto covers RoadBrowser with its "restricted while driving" screen, and won't open it again until you park. That is Android Auto's safety rule, and RoadBrowser doesn't try to get around it.</p>
+<h2>Listening while you drive</h2>
+<p>Audio can keep playing, like it would from any music app:</p>
+<ol>
+<li><strong>Before you set off</strong>, start what you want to hear while parked. It keeps playing when you pull away.</li>
+<li>Or, on the Android Auto screen, open <strong>RoadBrowser in the media section</strong>. Its list shows the page you last played, your quick links and your bookmarks. Pick one and it plays in the background. Nothing from the page is shown on the car screen.</li>
+<li>Use the <strong>steering-wheel buttons</strong>, Android Auto's play, pause and skip buttons, or voice commands. Don't reach for the phone.</li>
+</ol>
+<p>Video pages only play their sound while you drive.</p>
+<h2>Before you drive</h2>
+<ul>
+<li>In RoadBrowser's Settings, check that <strong>Keep audio playing in background</strong> is on. It is on by default.</li>
+<li>On OnePlus and other ColorOS phones, set RoadBrowser's battery usage to <strong>Don't optimize</strong>, or the phone may stop playback after a few minutes.</li>
+<li>Add the stations, playlists and podcasts you listen to as quick links or bookmarks, so you can pick them from the car screen later.</li>
+</ul>
+<h2>If something goes wrong</h2>
+<p>If a page won't play or the sound stops, pull over somewhere safe before you try to fix it.</p>
+<h2>The law</h2>
+<p>In many places it is illegal to hold a phone or watch video while driving. Know the rules where you drive. You are responsible for how you use RoadBrowser in a vehicle.</p>
+  </main>
+  <footer>Made by Yash V Maurya · <a href="https://github.com/Yash-v-maurya/RoadBrowser">github.com/Yash-v-maurya/RoadBrowser</a></footer>
+</div>
+</body>
+</html>

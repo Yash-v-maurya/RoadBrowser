@@ -47,6 +47,8 @@ object BrowserPreferences {
     private const val KEY_YOUTUBE_COMPAT_ENABLED = "youtube_compat_enabled"
     private const val KEY_BACKGROUND_AUDIO_ENABLED = "background_audio_enabled"
     private const val KEY_OPEN_POPUPS_IN_NEW_TAB_ENABLED = "open_popups_in_new_tab_enabled"
+    private const val KEY_LAST_MEDIA_URL = "last_media_url"
+    private const val KEY_LAST_MEDIA_TITLE = "last_media_title"
     private const val DEFAULT_URL = "https://www.google.com"
 
     private val DEFAULT_BOOKMARKS = listOf(
@@ -496,6 +498,28 @@ object BrowserPreferences {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putBoolean(KEY_OPEN_POPUPS_IN_NEW_TAB_ENABLED, enabled)
+            .apply()
+    }
+
+    /**
+     * The last page that actually played audio, offered as "Continue" in the Android Auto media
+     * list and resumed when the car's play button is pressed with nothing loaded.
+     */
+    fun getLastMediaPage(context: Context): TabSessionEntry? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val url = prefs.getString(KEY_LAST_MEDIA_URL, null)?.takeIf { it.isNotBlank() } ?: return null
+        val scheme = runCatching { Uri.parse(url).scheme?.lowercase() }.getOrNull()
+        if (scheme != "https" && scheme != "http") return null
+        return TabSessionEntry(url, prefs.getString(KEY_LAST_MEDIA_TITLE, null))
+    }
+
+    fun setLastMediaPage(context: Context, url: String, title: String?) {
+        val scheme = runCatching { Uri.parse(url).scheme?.lowercase() }.getOrNull()
+        if (scheme != "https" && scheme != "http") return
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_LAST_MEDIA_URL, url)
+            .putString(KEY_LAST_MEDIA_TITLE, title?.takeIf { it.isNotBlank() })
             .apply()
     }
 

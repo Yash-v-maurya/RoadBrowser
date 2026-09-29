@@ -77,21 +77,20 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@string/start_page_headline"
-                            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.RoadBrowser.TitleLarge"
                             android:letterSpacing="-0.01"
                             android:textColor="?attr/colorOnSurface" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/buttonStartPagePhotoOnly"
                             style="@style/Widget.Material3.Button.IconButton.Outlined"
-                            android:layout_width="@dimen/toolbar_button_size"
-                            android:layout_height="@dimen/toolbar_button_size"
+                            android:layout_width="@dimen/start_page_icon_button_size"
+                            android:layout_height="@dimen/start_page_icon_button_size"
                             android:insetTop="0dp"
                             android:insetBottom="0dp"
                             android:contentDescription="@string/start_page_photo_only"
                             app:icon="@drawable/crop_free_24px"
-                            app:iconSize="@dimen/toolbar_icon_size"
+                            app:iconSize="@dimen/start_page_icon_size"
                             app:iconGravity="textStart"
                             app:iconTint="?attr/colorOnSurfaceVariant"
                             app:strokeColor="?attr/colorOutlineVariant" />
@@ -102,7 +101,7 @@
                         android:id="@+id/startPageResumeCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="@dimen/start_page_section_gap"
                         android:visibility="gone"
                         android:clickable="true"
                         android:focusable="true"
@@ -118,11 +117,11 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:minHeight="64dp"
+                            android:minHeight="@dimen/start_page_resume_row_min_height"
                             android:paddingStart="14dp"
                             android:paddingEnd="12dp"
-                            android:paddingTop="8dp"
-                            android:paddingBottom="8dp">
+                            android:paddingTop="@dimen/start_page_resume_padding_v"
+                            android:paddingBottom="@dimen/start_page_resume_padding_v">
 
                             <FrameLayout
                                 android:id="@+id/startPageResumeIconContainer"
@@ -138,6 +137,7 @@
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/startPageResumeCaption"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/start_page_continue_label"
@@ -179,20 +179,20 @@
                         android:id="@+id/startPageCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        app:cardCornerRadius="24dp"
+                        android:layout_marginTop="@dimen/start_page_section_gap"
+                        app:cardCornerRadius="0dp"
                         app:cardElevation="0dp"
                         android:clipChildren="false"
                         android:clipToPadding="false"
                         app:cardPreventCornerOverlap="false"
                         app:cardUseCompatPadding="false"
-                        app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
+                        app:cardBackgroundColor="@android:color/transparent">
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/startPageQuickLinksContainer"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="6dp"
+                            android:padding="0dp"
                             android:clipToPadding="false"
                             android:clipChildren="false"
                             android:nestedScrollingEnabled="false" />
@@ -209,205 +209,246 @@
 
     </FrameLayout>
 
-    <!-- Car-first bottom toolbar: always on screen, sized for a head unit -->
+    <!--
+        Car-first bottom control strip.
+
+        The card is full bleed so the hairline on @drawable/toolbar_strip runs edge to edge,
+        but the controls live in a ConstraintLayout child capped at
+        @dimen/toolbar_chrome_content_max_width and centred. Below w1280dp that cap is larger
+        than any screen, so this is a plain full-width row; on a 1920dp ultrawide it stops the
+        row spreading into an unreachable arc (see values-w1280dp/dimens_chrome.xml).
+
+        Home, Reload, Bookmarks and the pill's Go button start out gone, which is exactly what
+        the narrowest bucket (values/bools.xml) asks for. BrowserUIManager.applyToolbarDensity()
+        turns each back on where its bool says the width can hold it. Defaulting to the tight
+        arrangement means the row can never overflow, not even for the frame between inflation
+        and the first layout pass.
+
+        Rhythm: every control after the first carries the same layout_marginStart
+        (@dimen/toolbar_chrome_gap) and nothing carries a marginEnd, so the spacing stays even
+        as bools.xml gates Home / Reload / Bookmarks off on narrower screens.
+    -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/carToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginStart="@dimen/toolbar_margin"
-        android:layout_marginEnd="@dimen/toolbar_margin"
-        android:layout_marginBottom="@dimen/toolbar_margin"
-        app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
-        app:cardCornerRadius="@dimen/toolbar_corner_radius"
-        app:cardElevation="4dp"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
         app:strokeColor="?attr/colorOutlineVariant"
-        app:strokeWidth="1dp">
+        app:strokeWidth="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolbarStrip"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/toolbarButtonBack"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="@dimen/toolbar_button_size"
-                android:layout_height="@dimen/toolbar_button_size"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:contentDescription="@string/menu_back"
-                app:icon="@drawable/arrow_back_24px"
-                app:iconSize="@dimen/toolbar_icon_size"
-                app:iconTint="?attr/colorOnSurface"
-                app:iconGravity="textStart" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/toolbarButtonHome"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="@dimen/toolbar_button_size"
-                android:layout_height="@dimen/toolbar_button_size"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:contentDescription="@string/toolbar_home"
-                app:icon="@drawable/home_24px"
-                app:iconSize="@dimen/toolbar_icon_size"
-                app:iconTint="?attr/colorOnSurface"
-                app:iconGravity="textStart" />
+            android:layout_height="@dimen/toolbar_chrome_height"
+            android:background="@drawable/toolbar_strip">
 
             <LinearLayout
-                android:id="@+id/toolbarAddressPill"
+                android:id="@+id/toolbarContent"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/toolbar_pill_height"
-                android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/toolbar_address_pill"
+                android:layout_height="0dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="14dp"
-                android:paddingEnd="4dp">
-
-                <ImageView
-                    android:id="@+id/persistentAddressSecureIcon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@string/secure_connection"
-                    android:src="@drawable/lock_24"
-                    app:tint="?attr/colorOnSurfaceVariant" />
-
-                <ImageView
-                    android:id="@+id/persistentAddressInsecureIcon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@string/insecure_connection"
-                    android:src="@drawable/lock_open_right_24"
-                    app:tint="?attr/colorError" />
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/persistentAddressEdit"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="@android:color/transparent"
-                    android:gravity="center_vertical"
-                    android:hint="@string/toolbar_address_hint"
-                    android:ellipsize="end"
-                    android:imeOptions="actionGo"
-                    android:inputType="textUri"
-                    android:paddingTop="0dp"
-                    android:paddingBottom="0dp"
-                    android:singleLine="true"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textColorHint="?attr/colorOnSurfaceVariant"
-                    android:textSize="@dimen/toolbar_address_text_size" />
+                android:paddingStart="@dimen/toolbar_chrome_side_padding"
+                android:paddingEnd="@dimen/toolbar_chrome_side_padding"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintWidth_max="@dimen/toolbar_chrome_content_max_width"
+                app:layout_constraintHorizontal_bias="0.5">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/persistentButtonClearAddress"
+                    android:id="@+id/toolbarButtonBack"
                     style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="@dimen/toolbar_chrome_button_size"
+                    android:layout_height="@dimen/toolbar_chrome_button_size"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:contentDescription="@string/menu_clear_address"
-                    android:visibility="gone"
-                    app:icon="@drawable/ic_close"
-                    app:iconSize="20dp"
-                    app:iconTint="?attr/colorOnSurfaceVariant"
-                    app:iconGravity="textStart" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/persistentButtonGo"
-                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:contentDescription="@string/menu_go"
-                    app:icon="@drawable/search_24px"
-                    app:iconSize="20dp"
-                    app:iconGravity="textStart" />
-            </LinearLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/toolbarButtonReload"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="@dimen/toolbar_button_size"
-                android:layout_height="@dimen/toolbar_button_size"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:contentDescription="@string/menu_reload"
-                app:icon="@drawable/refresh_24px"
-                app:iconSize="@dimen/toolbar_icon_size"
-                app:iconTint="?attr/colorOnSurface"
-                app:iconGravity="textStart" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/toolbarButtonBookmarks"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="@dimen/toolbar_button_size"
-                android:layout_height="@dimen/toolbar_button_size"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:contentDescription="@string/menu_bookmarks"
-                app:icon="@drawable/kid_star_24px"
-                app:iconSize="@dimen/toolbar_icon_size"
-                app:iconTint="?attr/colorOnSurface"
-                app:iconGravity="textStart" />
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/toolbarButtonTabs"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="@dimen/toolbar_button_size"
-                    android:layout_height="@dimen/toolbar_button_size"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:contentDescription="@string/toolbar_tabs"
-                    app:icon="@drawable/tab_group_24px"
-                    app:iconSize="@dimen/toolbar_icon_size"
+                    android:contentDescription="@string/menu_back"
+                    app:icon="@drawable/arrow_back_24px"
+                    app:iconSize="@dimen/toolbar_chrome_icon_size"
                     app:iconTint="?attr/colorOnSurface"
                     app:iconGravity="textStart" />
 
-                <TextView
-                    android:id="@+id/toolbarTabCount"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="2dp"
-                    android:background="@drawable/toolbar_tab_badge"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/toolbarButtonHome"
                     android:visibility="gone"
-                    tools:text="3"
-                    tools:visibility="visible" />
-            </FrameLayout>
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="@dimen/toolbar_chrome_button_size"
+                    android:layout_height="@dimen/toolbar_chrome_button_size"
+                    android:layout_marginStart="@dimen/toolbar_chrome_gap"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:contentDescription="@string/toolbar_home"
+                    app:icon="@drawable/home_24px"
+                    app:iconSize="@dimen/toolbar_chrome_icon_size"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:iconGravity="textStart" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/toolbarButtonMenu"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="@dimen/toolbar_button_size"
-                android:layout_height="@dimen/toolbar_button_size"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:contentDescription="@string/toolbar_menu"
-                app:icon="@drawable/more_vert_24px"
-                app:iconSize="@dimen/toolbar_icon_size"
-                app:iconTint="?attr/colorOnSurface"
-                app:iconGravity="textStart" />
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/toolbarAddressPill"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/toolbar_chrome_pill_height"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/toolbar_chrome_gap"
+                    android:background="@drawable/toolbar_address_pill"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/toolbar_chrome_pill_padding_start"
+                    android:paddingEnd="@dimen/toolbar_chrome_pill_padding_end">
+
+                    <ImageView
+                        android:id="@+id/persistentAddressSecureIcon"
+                        android:layout_width="@dimen/toolbar_chrome_lock_icon_size"
+                        android:layout_height="@dimen/toolbar_chrome_lock_icon_size"
+                        android:contentDescription="@string/secure_connection"
+                        android:src="@drawable/lock_24"
+                        app:tint="?attr/colorOnSurfaceVariant"     android:visibility="gone"
+                    />
+
+                    <ImageView
+                        android:id="@+id/persistentAddressInsecureIcon"
+                        android:layout_width="@dimen/toolbar_chrome_lock_icon_size"
+                        android:layout_height="@dimen/toolbar_chrome_lock_icon_size"
+                        android:contentDescription="@string/insecure_connection"
+                        android:src="@drawable/lock_open_right_24"
+                        app:tint="?attr/colorError"     android:visibility="gone"
+                    />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/persistentAddressEdit"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/toolbar_chrome_pill_text_gap"
+                        android:layout_marginEnd="@dimen/toolbar_chrome_pill_text_gap"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_vertical"
+                        android:hint="@string/toolbar_address_hint"
+                        android:ellipsize="end"
+                        android:imeOptions="actionGo"
+                        android:inputType="textUri"
+                        android:minWidth="0dp"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:singleLine="true"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textColorHint="?attr/colorOnSurfaceVariant"
+                        android:textSize="@dimen/toolbar_chrome_address_text_size" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/persistentButtonClearAddress"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="@dimen/toolbar_chrome_pill_button_size"
+                        android:layout_height="@dimen/toolbar_chrome_pill_button_size"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:contentDescription="@string/menu_clear_address"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_close"
+                        app:iconSize="@dimen/toolbar_chrome_pill_button_icon_size"
+                        app:iconTint="?attr/colorOnSurfaceVariant"
+                        app:iconGravity="textStart" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/persistentButtonGo"
+                        android:visibility="gone"
+                        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                        android:layout_width="@dimen/toolbar_chrome_pill_button_size"
+                        android:layout_height="@dimen/toolbar_chrome_pill_button_size"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:contentDescription="@string/menu_go"
+                        app:icon="@drawable/search_24px"
+                        app:iconSize="@dimen/toolbar_chrome_pill_button_icon_size"
+                        app:iconGravity="textStart" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/toolbarButtonReload"
+                    android:visibility="gone"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="@dimen/toolbar_chrome_button_size"
+                    android:layout_height="@dimen/toolbar_chrome_button_size"
+                    android:layout_marginStart="@dimen/toolbar_chrome_gap"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:contentDescription="@string/menu_reload"
+                    app:icon="@drawable/refresh_24px"
+                    app:iconSize="@dimen/toolbar_chrome_icon_size"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:iconGravity="textStart" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/toolbarButtonBookmarks"
+                    android:visibility="gone"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="@dimen/toolbar_chrome_button_size"
+                    android:layout_height="@dimen/toolbar_chrome_button_size"
+                    android:layout_marginStart="@dimen/toolbar_chrome_gap"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:contentDescription="@string/menu_bookmarks"
+                    app:icon="@drawable/kid_star_24px"
+                    app:iconSize="@dimen/toolbar_chrome_icon_size"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:iconGravity="textStart" />
+
+                <FrameLayout
+                    android:id="@+id/toolbarTabsSlot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/toolbar_chrome_gap">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/toolbarButtonTabs"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="@dimen/toolbar_chrome_button_size"
+                        android:layout_height="@dimen/toolbar_chrome_button_size"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:contentDescription="@string/toolbar_tabs"
+                        app:icon="@drawable/tab_group_24px"
+                        app:iconSize="@dimen/toolbar_chrome_icon_size"
+                        app:iconTint="?attr/colorOnSurface"
+                        app:iconGravity="textStart" />
+
+                    <TextView
+                        android:id="@+id/toolbarTabCount"
+                        android:layout_width="@dimen/toolbar_chrome_badge_size"
+                        android:layout_height="@dimen/toolbar_chrome_badge_size"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:background="@drawable/toolbar_tab_badge"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        tools:text="3"
+                        tools:visibility="visible" />
+                </FrameLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/toolbarButtonMenu"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="@dimen/toolbar_chrome_button_size"
+                    android:layout_height="@dimen/toolbar_chrome_button_size"
+                    android:layout_marginStart="@dimen/toolbar_chrome_gap"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:contentDescription="@string/toolbar_menu"
+                    app:icon="@drawable/more_vert_24px"
+                    app:iconSize="@dimen/toolbar_chrome_icon_size"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:iconGravity="textStart" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <FrameLayout
@@ -428,7 +469,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            app:cardElevation="@dimen/menu_card_elevation"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Card.BottomSheet"
             android:clickable="true"
             android:focusable="true">
@@ -442,8 +486,8 @@
                     android:id="@+id/dragHandleArea"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="24dp"
-                    android:paddingBottom="24dp"
+                    android:paddingTop="@dimen/sheet_handle_padding_vertical"
+                    android:paddingBottom="@dimen/sheet_handle_padding_vertical"
                     android:clickable="true"
                     android:focusable="true">
 
@@ -464,7 +508,6 @@
                         android:id="@+id/menuScroll"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/menu_max_height"
                         android:fillViewport="false"
                         android:clipToPadding="false"
                         android:overScrollMode="ifContentScrolls">
@@ -926,7 +969,6 @@
                         android:id="@+id/bookmarkManagerRoot"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/menu_max_height"
                         android:fillViewport="false"
                         android:clipToPadding="false"
                         android:overScrollMode="ifContentScrolls"
@@ -1067,7 +1109,6 @@
                         android:id="@+id/tabManagerRoot"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/menu_max_height"
                         android:fillViewport="false"
                         android:clipToPadding="false"
                         android:overScrollMode="ifContentScrolls"
@@ -1174,7 +1215,6 @@
                         android:id="@+id/qrCodeViewRoot"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/menu_max_height"
                         android:fillViewport="false"
                         android:clipToPadding="false"
                         android:overScrollMode="ifContentScrolls"
@@ -1321,7 +1361,6 @@
                         android:id="@+id/checkLatestViewRoot"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/menu_max_height"
                         android:fillViewport="false"
                         android:clipToPadding="false"
                         android:overScrollMode="ifContentScrolls"
@@ -1461,7 +1500,6 @@
                         android:id="@+id/settingsViewRoot"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxHeight="@dimen/menu_max_height"
                         android:fillViewport="false"
                         android:clipToPadding="false"
                         android:overScrollMode="ifContentScrolls"

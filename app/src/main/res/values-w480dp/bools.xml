@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="toolbar_show_pill_go">true</bool>
+    <bool name="toolbar_show_home">true</bool>
+</resources>

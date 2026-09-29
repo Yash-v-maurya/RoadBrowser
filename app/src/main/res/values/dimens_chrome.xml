@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Browser chrome metrics: the bottom control strip and the menu / overlay sheets.
+
+    These live apart from dimens.xml on purpose. The strip is sized by *available width*
+    (values-w###dp), because what has to fit is a row of fixed-width targets plus one elastic
+    address pill; smallestWidth and orientation say nothing useful about that. The ladder is:
+
+        values           < 360dp   compact phone, portrait
+        values-w360dp    360-479   phone portrait
+        values-w480dp    480-599   large phone portrait / small phone landscape
+        values-w600dp    600-839   baseline head unit (800x480dp) and tablet portrait
+        values-w840dp    840-1279  large head unit (1024x600dp) / phone landscape / tablet
+        values-w1280dp   1280+     wide and ultrawide head units (1280x720, 1920x720)
+
+    Available width wins over `land` and `sw###dp` in the qualifier precedence table, so every
+    chrome dimension resolves from exactly one of these files and nothing else can shadow it.
+    Sheet heights are additionally clamped at runtime to a fraction of the real window, because
+    height, not width, is what makes a 600dp sheet unreachable on a 480dp-tall head unit.
+
+    Defaults below are the compact-phone bucket.
+-->
+<resources>
+    <!-- Strip. One height per bucket; nothing else may set the strip's height. -->
+    <dimen name="toolbar_chrome_height">64dp</dimen>
+    <dimen name="toolbar_chrome_side_padding">6dp</dimen>
+    <!-- Uniform gap between every control in the strip, pill included. -->
+    <dimen name="toolbar_chrome_gap">4dp</dimen>
+    <!-- Centred cap on the strip's content. Effectively unbounded below w1280dp. -->
+    <dimen name="toolbar_chrome_content_max_width">4000dp</dimen>
+
+    <!-- Icon buttons. Never below 48dp: these are the primary driving targets. -->
+    <dimen name="toolbar_chrome_button_size">48dp</dimen>
+    <dimen name="toolbar_chrome_icon_size">24dp</dimen>
+
+    <!-- Address pill. -->
+    <dimen name="toolbar_chrome_pill_height">52dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_start">6dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_end">4dp</dimen>
+    <dimen name="toolbar_chrome_pill_button_size">48dp</dimen>
+    <dimen name="toolbar_chrome_pill_button_icon_size">20dp</dimen>
+    <dimen name="toolbar_chrome_lock_icon_size">18dp</dimen>
+    <dimen name="toolbar_chrome_pill_text_gap">6dp</dimen>
+    <dimen name="toolbar_chrome_address_text_size">15sp</dimen>
+
+    <!-- Tab count badge. -->
+    <dimen name="toolbar_chrome_badge_size">20dp</dimen>
+
+    <!-- Menu / overlay sheets. The runtime clamp takes the smaller of this and 88% of the
+         window, so this is only the ceiling on tall screens. -->
+    <dimen name="menu_sheet_max_height">560dp</dimen>
+    <dimen name="menu_sheet_min_height">180dp</dimen>
+    <dimen name="sheet_handle_padding_vertical">14dp</dimen>
+</resources>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terms of Use · RoadBrowser</title>
+<style>
+  /* First source serves the download site, second the copy bundled in the app. */
+  @font-face {
+    font-family: "Overpass";
+    src: url("../assets/overpass.ttf") format("truetype-variations"),
+         url("file:///android_res/font/overpass.ttf") format("truetype-variations");
+    font-weight: 300 700;
+    font-display: swap;
+  }
+  :root {
+    --paper: #ede3cf;
+    --card: #faf6ec;
+    --ink: #1b1714;
+    --ink-muted: #5d5445;
+    --rule: #c9b894;
+    --amber: #8a5a0e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14120f;
+      --card: #1b1815;
+      --ink: #f2ead9;
+      --ink-muted: #d0c7b5;
+      --rule: #4e483e;
+      --amber: #e3b25c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Overpass", system-ui, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 16px 56px; }
+  header { padding: 28px 0 0; }
+  .brand { font-weight: 700; letter-spacing: -0.01em; color: var(--ink-muted); }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+  nav a {
+    color: var(--ink); text-decoration: none; font-weight: 600; font-size: .95rem;
+    padding: 9px 16px; border: 1px solid var(--rule); border-radius: 999px; background: var(--card);
+  }
+  nav a[aria-current="page"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .roadrule {
+    height: 5px; margin: 22px 0 0; border-radius: 3px; opacity: .85;
+    background: repeating-linear-gradient(90deg, var(--amber) 0 30px, transparent 30px 52px);
+  }
+  h1 { font-size: clamp(2rem, 6vw, 2.8rem); letter-spacing: -0.02em; line-height: 1.1; margin: 28px 0 12px; }
+  h2 { font-size: 1.25rem; margin: 34px 0 8px; padding-top: 18px; border-top: 1px solid var(--rule); }
+  p, li { max-width: 68ch; }
+  li { margin-bottom: 6px; }
+  a { color: var(--amber); overflow-wrap: anywhere; }
+  code { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 1px 6px; font-size: .9em; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+  tr:last-child td { border-bottom: 0; }
+  th { font-weight: 600; }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--ink-muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">RoadBrowser</div>
+    <nav><a href="privacy.html">Privacy</a><a href="terms.html" aria-current="page">Terms</a><a href="driving-safety.html">Driving safety</a><a href="notices.html">Notices</a></nav>
+    <div class="roadrule"></div>
+  </header>
+  <main>
+<h1>Terms of Use</h1>
+<p><strong>Effective 29 September 2026</strong></p>
+<p>These terms cover your use of RoadBrowser, a web browser for Android phones and Android Auto made by Yash V Maurya. By installing or using RoadBrowser you agree to them. If you don't agree, please don't use the app.</p>
+<h2>1. Your licence to the software</h2>
+<p>RoadBrowser is free software released under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License, version 3</a> (GPLv3). You may use, study, share and modify it under that licence. Nothing in these terms limits the rights the GPLv3 gives you. If these terms and the GPLv3 ever conflict about the software itself, the GPLv3 wins.</p>
+<h2>2. Driving safety comes first</h2>
+<ul>
+<li><strong>Don't watch, read or browse while driving.</strong> Use RoadBrowser's screen only when you are safely parked, or as a passenger.</li>
+<li>While the car is moving, Android Auto covers the browser with its "restricted while driving" screen. That is Android Auto's safety rule. Don't try to get around it.</li>
+<li>Listening to audio through Android Auto's media screen works like any music app. Set things up before you drive, keep interactions brief, and use the steering-wheel buttons or voice where you can.</li>
+<li>Always follow the traffic laws where you drive. <strong>You are responsible for how you use the app in a vehicle.</strong></li>
+</ul>
+<p>More detail is on the <a href="driving-safety.html">Driving Safety</a> page.</p>
+<h2>3. Websites and content</h2>
+<p>RoadBrowser shows websites that other people run. The developer doesn't control, endorse or take responsibility for any website or its content. When you use a website or streaming service, its own terms apply, including any rules about ad blocking or background playback. You are responsible for what you open and do in the browser.</p>
+<h2>4. Acceptable use</h2>
+<p>Don't use RoadBrowser to break the law, to infringe anyone's rights, or to disrupt or gain unauthorised access to any service or network.</p>
+<h2>5. Features that change how sites load</h2>
+<p>Shields blocks requests to known ad and tracker domains. YouTube compatibility mode asks YouTube for its mobile version. Background playback keeps pages playing when they are not on screen. These features can make some sites behave differently from how their owners intended. You can switch each of them off in Settings.</p>
+<h2>6. Mobile data</h2>
+<p>Streaming audio and video uses mobile data. Any charges from your mobile carrier are your responsibility.</p>
+<h2>7. No warranty</h2>
+<p>RoadBrowser is provided <strong>"as is", without warranty of any kind</strong>, as set out in sections 15 and 16 of the GPLv3. It isn't guaranteed to be error-free, to work without interruption, or to work with every phone, car, head unit or version of Android Auto. Showing RoadBrowser in Android Auto relies on Android Auto's developer settings, which Google may change or remove at any time.</p>
+<h2>8. Limitation of liability</h2>
+<p>To the fullest extent the law allows, the developer is not liable for any damage or loss that comes from using, or being unable to use, RoadBrowser. This includes accidents, traffic fines, lost data and mobile data charges. Some places don't allow certain limits on liability. Where that is the case, liability is limited as far as the law there permits.</p>
+<h2>9. Official source</h2>
+<p>The only official source of RoadBrowser is <a href="https://github.com/Yash-v-maurya/RoadBrowser">github.com/Yash-v-maurya/RoadBrowser</a>. Copies from anywhere else may have been modified, and the developer isn't responsible for them.</p>
+<h2>10. Trademarks</h2>
+<p>Android, Android Auto, Google and YouTube are trademarks of Google LLC. Other product and company names belong to their owners. RoadBrowser is an independent project. It is not affiliated with, sponsored by or endorsed by Google or by any car maker.</p>
+<h2>11. Changes to these terms</h2>
+<p>These terms may be updated. The new version ships with the app and is published in the project's source repository with a new effective date. If you keep using RoadBrowser after an update, you accept the new terms.</p>
+<h2>12. Contact</h2>
+<p>Questions about these terms: open an issue at <a href="https://github.com/Yash-v-maurya/RoadBrowser/issues">github.com/Yash-v-maurya/RoadBrowser/issues</a>.</p>
+  </main>
+  <footer>Made by Yash V Maurya · <a href="https://github.com/Yash-v-maurya/RoadBrowser">github.com/Yash-v-maurya/RoadBrowser</a></footer>
+</div>
+</body>
+</html>

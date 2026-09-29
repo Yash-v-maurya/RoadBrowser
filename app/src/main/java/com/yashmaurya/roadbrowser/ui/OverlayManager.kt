@@ -47,28 +47,34 @@ class OverlayManager(
         binding.qrCodeImage.setImageBitmap(null)
         binding.qrCodeUrl.text = url
 
+        uiManager.applySheetHeightCap()
+
         activity.lifecycleScope.launch {
             val bitmap = QRUtils.generateQrCodeAsync(url)
             if (bitmap != null) {
                 binding.qrCodeImage.setImageBitmap(bitmap)
             }
+            uiManager.applySheetHeightCap()
         }
     }
 
     fun hideQrCodeView() {
         binding.qrCodeViewRoot.visibility = View.GONE
         binding.menuScroll.visibility = View.VISIBLE
+        uiManager.applySheetHeightCap()
     }
 
     fun showSettingsView() {
         hideAllOverlays()
         binding.settingsViewRoot.visibility = View.VISIBLE
         ensureSettingsContentPopulated()
+        uiManager.applySheetHeightCap()
     }
 
     fun hideSettingsView() {
         binding.settingsViewRoot.visibility = View.GONE
         binding.menuScroll.visibility = View.VISIBLE
+        uiManager.applySheetHeightCap()
     }
 
     fun showCheckLatestView() {
@@ -85,14 +91,20 @@ class OverlayManager(
             "v${com.yashmaurya.roadbrowser.BuildConfig.VERSION_NAME}"
         )
 
+        uiManager.applySheetHeightCap()
         fetchLatestVersion()
     }
 
     fun hideCheckLatestView() {
         binding.checkLatestViewRoot.visibility = View.GONE
         binding.menuScroll.visibility = View.VISIBLE
+        uiManager.applySheetHeightCap()
     }
 
+    /**
+     * Only one of these is ever on screen at a time; they share the sheet, so hiding the rest
+     * is what lets [BrowserUIManager.applySheetHeightCap] size the sheet to the visible one.
+     */
     private fun hideAllOverlays() {
         val views = listOf(
             binding.menuScroll,

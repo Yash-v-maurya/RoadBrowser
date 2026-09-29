@@ -19,6 +19,10 @@
     <item name="viewSourceButton" type="id" />
     <item name="viewLicenseButton" type="id" />
     <item name="viewOssLicensesButton" type="id" />
+    <item name="viewPrivacyPolicyButton" type="id" />
+    <item name="viewTermsButton" type="id" />
+    <item name="viewDrivingSafetyButton" type="id" />
+    <item name="viewNoticesButton" type="id" />
     <item name="buttonQrCopy" type="id" />
     <item name="buttonQrExternalBrowser" type="id" />
 </resources>

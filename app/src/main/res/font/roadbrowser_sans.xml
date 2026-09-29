@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Manrope (SIL OFL 1.1, see docs/licenses/OFL_Manrope.txt) as a variable font: one file,
-     weights selected through fontVariationSettings. -->
+<!-- Overpass (SIL OFL 1.1, see docs/licenses/OFL_Overpass.txt). A grotesque drawn from highway
+     signage lettering: open apertures and a tall x-height, which is what keeps it readable at a
+     glance from the driver's seat. One variable file; weights are selected per role. -->
 <font-family xmlns:android="http://schemas.android.com/apk/res/android">
-    <font android:font="@font/manrope" android:fontStyle="normal" android:fontWeight="400" android:fontVariationSettings="'wght' 400" />
-    <font android:font="@font/manrope" android:fontStyle="normal" android:fontWeight="500" android:fontVariationSettings="'wght' 500" />
-    <font android:font="@font/manrope" android:fontStyle="normal" android:fontWeight="600" android:fontVariationSettings="'wght' 600" />
-    <font android:font="@font/manrope" android:fontStyle="normal" android:fontWeight="700" android:fontVariationSettings="'wght' 700" />
-    <font android:font="@font/manrope" android:fontStyle="normal" android:fontWeight="800" android:fontVariationSettings="'wght' 800" />
+    <font android:font="@font/overpass" android:fontStyle="normal" android:fontWeight="300" android:fontVariationSettings="'wght' 300" />
+    <font android:font="@font/overpass" android:fontStyle="normal" android:fontWeight="400" android:fontVariationSettings="'wght' 400" />
+    <font android:font="@font/overpass" android:fontStyle="normal" android:fontWeight="500" android:fontVariationSettings="'wght' 500" />
+    <font android:font="@font/overpass" android:fontStyle="normal" android:fontWeight="600" android:fontVariationSettings="'wght' 600" />
+    <font android:font="@font/overpass" android:fontStyle="normal" android:fontWeight="700" android:fontVariationSettings="'wght' 700" />
 </font-family>

@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.yashmaurya.roadbrowser.R
@@ -25,6 +27,31 @@ class TabAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TabViewHolder {
         val binding = ItemBrowserTabBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TabViewHolder(binding)
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        applyResponsiveSpan(recyclerView)
+    }
+
+    /**
+     * Wide screens show the open tabs as a grid so a short head unit screen fits more than
+     * three tabs at a glance; narrow screens keep the single column. The span count is
+     * qualifier driven (see the dimens_settings.xml resources).
+     */
+    private fun applyResponsiveSpan(recyclerView: RecyclerView) {
+        val spanCount = recyclerView.resources.getInteger(R.integer.list_span_count).coerceAtLeast(1)
+        val current = recyclerView.layoutManager
+        if (spanCount <= 1) {
+            if (current == null) {
+                recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
+            }
+            return
+        }
+        if (current is GridLayoutManager && current.spanCount == spanCount) {
+            return
+        }
+        recyclerView.layoutManager = GridLayoutManager(recyclerView.context, spanCount)
     }
 
     override fun onBindViewHolder(holder: TabViewHolder, position: Int) {
@@ -64,11 +91,14 @@ class TabAdapter(
             binding.root.strokeColor = resolveThemeColor(com.google.android.material.R.attr.colorOutlineVariant)
             binding.root.setOnClickListener { onTabClick(tab) }
 
+            val iconSizeDp = context.resources.getDimension(R.dimen.list_item_icon_size) /
+                context.resources.displayMetrics.density
+
             binding.iconContainer.removeAllViews()
             binding.iconContainer.addView(
                 bookmarkManager.createSiteIconBadge(
                     url = tab.currentUrl.takeIf { bookmarkManager.isActiveWebsiteUrl(it) },
-                    sizeDp = 40f,
+                    sizeDp = iconSizeDp,
                     cornerRadiusDp = 12f,
                     paddingDp = 6f,
                     backgroundColor = resolveThemeColor(com.google.android.material.R.attr.colorSurfaceContainerHighest)

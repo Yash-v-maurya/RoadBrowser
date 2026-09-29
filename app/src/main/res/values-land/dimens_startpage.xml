@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Short landscape: phone landscape and the 800x480dp head unit. Height is the scarce
+    resource here (480dp less a ~58dp toolbar), so the tile loses the URL line, keeps a
+    single title line and sits just under 96dp tall - two rows plus the header and the
+    resume card still fit without scrolling, and one tile stays well under 40% of the
+    screen height.
+
+    800dp wide, 16dp page padding: 768dp available -> 6 cols would be 128dp (< 200dp min),
+    so 3 columns of 256dp x 2 rows.
+-->
+<resources>
+    <dimen name="start_page_grid_min_tile_width">200dp</dimen>
+    <dimen name="start_page_grid_max_tile_width">300dp</dimen>
+
+    <dimen name="start_page_slot_gap">6dp</dimen>
+    <dimen name="start_page_slot_min_height">92dp</dimen>
+    <dimen name="start_page_slot_padding_h">14dp</dimen>
+    <dimen name="start_page_slot_padding_v">10dp</dimen>
+    <dimen name="start_page_slot_icon_size">40dp</dimen>
+    <dimen name="start_page_slot_icon_gap">6dp</dimen>
+
+    <dimen name="start_page_slot_title_size">15sp</dimen>
+    <dimen name="start_page_slot_title_min_size">11sp</dimen>
+    <dimen name="start_page_slot_label_size">11sp</dimen>
+    <integer name="start_page_slot_title_lines">1</integer>
+    <bool name="start_page_slot_show_label">false</bool>
+
+    <dimen name="start_page_resume_icon_size">36dp</dimen>
+    <dimen name="start_page_resume_row_min_height">52dp</dimen>
+    <dimen name="start_page_resume_padding_v">6dp</dimen>
+    <dimen name="start_page_resume_corner">16dp</dimen>
+    <bool name="start_page_resume_compact">true</bool>
+
+    <!-- Vertical rhythm between header, resume card and grid (activity_main.xml). -->
+    <dimen name="start_page_section_gap">8dp</dimen>
+</resources>

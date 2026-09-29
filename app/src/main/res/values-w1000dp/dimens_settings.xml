@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Wide head units: two settings columns so a short screen shows twice as much. -->
+<resources>
+    <integer name="settings_column_count">2</integer>
+    <dimen name="settings_page_padding_horizontal">24dp</dimen>
+    <dimen name="settings_column_gap">20dp</dimen>
+    <dimen name="settings_card_padding_horizontal">10dp</dimen>
+</resources>

@@ -55,11 +55,14 @@ class BookmarkAdapter(
             binding.root.strokeColor = resolveThemeColor(com.google.android.material.R.attr.colorOutlineVariant)
             binding.root.setOnClickListener { onBookmarkClick(bookmark) }
 
+            val iconSizeDp = context.resources.getDimension(R.dimen.list_item_icon_size) /
+                context.resources.displayMetrics.density
+
             binding.iconContainer.removeAllViews()
             binding.iconContainer.addView(
                 bookmarkManager.createSiteIconBadge(
                     url = bookmark,
-                    sizeDp = 40f,
+                    sizeDp = iconSizeDp,
                     cornerRadiusDp = 12f,
                     paddingDp = 6f,
                     backgroundColor = resolveThemeColor(com.google.android.material.R.attr.colorSurfaceContainerHighest)

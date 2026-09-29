@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Head units can be as short as 480dp. The header and the action buttons stay pinned;
+    only the body scrolls, so the buttons are always reachable no matter how long the
+    host name or the detail text is.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="@dimen/dialog_padding">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,100 +35,127 @@
             android:textColor="?attr/colorOnSurface" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/cleartext_message"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurface"
-        android:paddingBottom="12dp" />
+        android:layout_weight="1"
+        android:fillViewport="false"
+        android:scrollbarStyle="outsideOverlay">
 
-    <LinearLayout
-        android:id="@+id/cleartext_host_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="12dp"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/cleartext_host_label"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceLabelMedium"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textStyle="bold" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            app:cardBackgroundColor="?attr/colorSecondaryContainer"
-            app:strokeWidth="0dp">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/cleartext_host_value"
+                android:id="@+id/cleartext_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textColor="?attr/colorOnSecondaryContainer"
-                android:textStyle="bold" />
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:paddingBottom="12dp" />
 
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/cleartext_host_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="12dp"
+                android:visibility="gone">
 
-    <TextView
-        android:id="@+id/cleartext_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:visibility="gone" />
+                <TextView
+                    android:id="@+id/cleartext_host_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
 
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <TextView
+                        android:id="@+id/cleartext_host_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="12dp"
+                        android:textAppearance="?attr/textAppearanceTitleSmall"
+                        android:textColor="?attr/colorOnSecondaryContainer" />
+
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/cleartext_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!--
+        The three actions share the row by weight, so they shrink instead of pushing each
+        other off a narrow screen, and every one of them keeps a 48dp (56dp on a head unit)
+        touch target.
+    -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:paddingTop="16dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancel_dialog"
             style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel" />
-
-        <Space
             android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_weight="1"
+            android:minWidth="0dp"
+            android:minHeight="@dimen/dialog_button_min_height"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="@android:string/cancel" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_allow_once"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Allow once"
-                app:iconTint="@null"
-                android:textColor="?attr/colorError" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_allow_once"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/dialog_button_gap"
+            android:minWidth="0dp"
+            android:minHeight="@dimen/dialog_button_min_height"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="Allow once"
+            app:iconTint="@null"
+            android:textColor="?attr/colorError" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_allow_host"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Always allow for this host"
-                android:layout_marginTop="8dp"
-                app:iconTint="@null"
-                android:textColor="?attr/colorError" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_allow_host"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.4"
+            android:layout_marginStart="@dimen/dialog_button_gap"
+            android:minWidth="0dp"
+            android:minHeight="@dimen/dialog_button_min_height"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="Always allow for this host"
+            app:iconTint="@null"
+            android:textColor="?attr/colorError" />
 
-        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

@@ -156,6 +156,7 @@ class MainActivity : AppCompatActivity() {
 
         permissionManager.ensureNotificationPermissionIfNeeded(REQUEST_CODE_POST_NOTIFICATIONS)
         showFreeDroidWarnOnUpgradeMaterial()
+        handleMediaSearchIntent(intent)
 
         // Steering-wheel / notification buttons land here and are routed into the active page.
         com.yashmaurya.roadbrowser.media.MediaPlaybackService.actionHandler =
@@ -169,10 +170,21 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (handleMediaSearchIntent(intent)) return
         val url = navigationManager.extractBrowsableUrl(intent)
         if (url != null) {
             navigationManager.loadUrlFromIntent(url)
         }
+    }
+
+    /** "Play <name> on RoadBrowser" from the assistant: plays the matching quick link or bookmark. */
+    private fun handleMediaSearchIntent(intent: Intent?): Boolean {
+        if (intent?.action != android.provider.MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH) return false
+        com.yashmaurya.roadbrowser.media.MediaPlaybackService.playFromSearch(
+            this,
+            intent.getStringExtra(android.app.SearchManager.QUERY)
+        )
+        return true
     }
 
     override fun onResume() {
@@ -203,8 +215,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        com.yashmaurya.roadbrowser.media.MediaPlaybackService.actionHandler = null
-        com.yashmaurya.roadbrowser.media.MediaPlaybackService.stop(this)
+        // Leaves playback that Android Auto started in the car player running.
+        com.yashmaurya.roadbrowser.media.MediaPlaybackService.onBrowserClosed()
         uiManager.exitFullscreen()
         startPageManager.onDestroy()
 
@@ -671,7 +683,14 @@ class MainActivity : AppCompatActivity() {
             // Inactive tabs are paused by TabManager, so only the active one owns the session.
             if (tabId != tabManager.activeTabId) return
             if (!BrowserPreferences.isBackgroundAudioEnabled(this@MainActivity)) return
-            com.yashmaurya.roadbrowser.media.MediaPlaybackService.update(this@MainActivity, playing, title, artist)
+            com.yashmaurya.roadbrowser.media.MediaPlaybackService.update(
+                this@MainActivity,
+                com.yashmaurya.roadbrowser.media.MediaPlaybackService.Source.BROWSER,
+                playing,
+                title,
+                artist,
+                tabManager.activeTab?.currentUrl
+            )
         }
 
         override fun sanitizeJsExternalUrl(sourceWebView: android.webkit.WebView, rawUrl: String?): Uri? {

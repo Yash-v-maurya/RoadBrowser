@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Large head unit (1024x600dp), phone landscape and tablets. -->
+<resources>
+    <dimen name="toolbar_chrome_height">70dp</dimen>
+    <dimen name="toolbar_chrome_side_padding">16dp</dimen>
+    <dimen name="toolbar_chrome_gap">10dp</dimen>
+    <dimen name="toolbar_chrome_button_size">56dp</dimen>
+    <dimen name="toolbar_chrome_icon_size">28dp</dimen>
+    <dimen name="toolbar_chrome_pill_height">58dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_start">16dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_end">6dp</dimen>
+    <dimen name="toolbar_chrome_pill_button_size">52dp</dimen>
+    <dimen name="toolbar_chrome_pill_button_icon_size">24dp</dimen>
+    <dimen name="toolbar_chrome_lock_icon_size">22dp</dimen>
+    <dimen name="toolbar_chrome_pill_text_gap">10dp</dimen>
+    <dimen name="toolbar_chrome_address_text_size">18sp</dimen>
+    <dimen name="toolbar_chrome_badge_size">22dp</dimen>
+    <dimen name="menu_sheet_max_height">640dp</dimen>
+    <dimen name="sheet_handle_padding_vertical">16dp</dimen>
+</resources>

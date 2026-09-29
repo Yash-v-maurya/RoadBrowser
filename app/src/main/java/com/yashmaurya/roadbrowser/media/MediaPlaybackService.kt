@@ -5,23 +5,27 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.media.MediaMetadata
+import android.media.browse.MediaBrowser.MediaItem
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
+import android.os.Bundle
 import android.os.Handler
-import android.os.IBinder
 import android.os.Looper
+import android.os.Process
+import android.service.media.MediaBrowserService
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.yashmaurya.roadbrowser.MainActivity
 import com.yashmaurya.roadbrowser.R
+import com.yashmaurya.roadbrowser.data.BrowserPreferences
 
 /**
  * Foreground media-playback service that backs the browser's playback with a real
- * [MediaSession].
+ * [MediaSession], and RoadBrowser's entry in Android Auto's media screen.
  *
  * Chromium takes audio focus for the page on its own, but without a session of our own the
  * head unit's steering-wheel buttons and the phone's media notification have nothing to talk
@@ -29,73 +33,187 @@ import com.yashmaurya.roadbrowser.R
  * to freeze once Maps has covered the browser for a while. Holding a `mediaPlayback` foreground
  * service while something is playing fixes both.
  *
- * The activity drives it with [update]; session callbacks are forwarded to whatever
- * [MediaActionHandler] is registered, which routes them into the active page via
- * [MediaSessionBridge.dispatch]. The service stops itself after [PAUSED_TIMEOUT_MS] of being
- * paused, when the user hits Stop, or when the activity is destroyed.
+ * As a [MediaBrowserService] it also lists [CarMediaCatalog] to Android Auto. The browser itself
+ * is blocked while the car is moving, but Android Auto's own player stays usable, so picking a
+ * page there plays it in [BackgroundWebPlayer] with nothing shown on screen.
+ *
+ * Two sources can feed the session: the browser tabs ([Source.BROWSER], driven by the activity
+ * through [update]) and the car player ([Source.CAR_PLAYER]). Whichever started playing last owns
+ * the session and receives the buttons; the other one is paused so two pages never play over
+ * each other. The service shuts down after [PAUSED_TIMEOUT_MS] of being paused, when the user
+ * hits Stop, or when the browser closes while it owns the session.
  */
-class MediaPlaybackService : Service() {
+class MediaPlaybackService : MediaBrowserService() {
 
     fun interface MediaActionHandler {
         fun onMediaAction(action: String)
     }
 
+    enum class Source { BROWSER, CAR_PLAYER }
+
     private lateinit var session: MediaSession
     private val handler = Handler(Looper.getMainLooper())
-    private val stopWhenIdle = Runnable { stopSelf() }
-    private var isPlaying = false
+    private val stopWhenIdle = Runnable { shutDown() }
+    private var isStarted = false
+    private var state = PlaybackState.STATE_NONE
     private var title = ""
     private var artist = ""
 
     override fun onCreate() {
         super.onCreate()
-        isRunning = true
         session = MediaSession(this, "RoadBrowser").apply {
             setCallback(object : MediaSession.Callback() {
-                override fun onPlay() = forward("play")
+                override fun onPlay() = resume()
                 override fun onPause() = forward("pause")
                 override fun onSkipToNext() = forward("nexttrack")
                 override fun onSkipToPrevious() = forward("previoustrack")
                 override fun onFastForward() = forward("seekforward")
                 override fun onRewind() = forward("seekbackward")
-                override fun onStop() {
-                    forward("pause")
-                    stopSelf()
-                }
+                override fun onStop() = shutDown()
+                override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) = playFromMediaId(mediaId)
+                override fun onPlayFromSearch(query: String?, extras: Bundle?) = playFromSearch(query)
             })
             setSessionActivity(contentIntent())
         }
+        sessionToken = session.sessionToken
+        BackgroundWebPlayer.listener = BackgroundWebPlayer.Listener { playing, pageTitle, pageArtist, pageUrl ->
+            update(this, Source.CAR_PLAYER, playing, pageTitle, pageArtist, pageUrl)
+        }
         ensureChannel()
+        instance = this
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        isStarted = true
         when (intent?.action) {
             ACTION_STOP -> {
-                stopSelf()
+                shutDown()
                 return START_NOT_STICKY
             }
-            ACTION_UPDATE -> {
-                isPlaying = intent.getBooleanExtra(EXTRA_PLAYING, false)
-                title = intent.getStringExtra(EXTRA_TITLE).orEmpty()
-                artist = intent.getStringExtra(EXTRA_ARTIST).orEmpty()
-            }
+            ACTION_UPDATE -> applyUpdate(
+                intent.getBooleanExtra(EXTRA_PLAYING, false),
+                intent.getStringExtra(EXTRA_TITLE).orEmpty(),
+                intent.getStringExtra(EXTRA_ARTIST).orEmpty()
+            )
+            ACTION_PLAY_FROM_SEARCH -> playFromSearch(intent.getStringExtra(EXTRA_QUERY))
+            else -> if (state != PlaybackState.STATE_NONE) publishState()
         }
-        publishState()
         return START_NOT_STICKY
     }
 
     override fun onDestroy() {
-        isRunning = false
+        instance = null
+        owner = Source.BROWSER
         handler.removeCallbacks(stopWhenIdle)
+        BackgroundWebPlayer.listener = null
+        BackgroundWebPlayer.release()
         session.isActive = false
         session.release()
         super.onDestroy()
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null
+    override fun onGetRoot(clientPackageName: String, clientUid: Int, rootHints: Bundle?): BrowserRoot? {
+        // The list holds the user's bookmarks, so only Android Auto, the system media controls
+        // and RoadBrowser itself may browse it (the framework checks the package against the uid).
+        val trusted = clientUid == Process.myUid() ||
+            clientUid == Process.SYSTEM_UID ||
+            clientPackageName in TRUSTED_BROWSER_PACKAGES
+        return if (trusted) BrowserRoot(CarMediaCatalog.ROOT_ID, null) else null
+    }
 
-    private fun forward(action: String) {
-        actionHandler?.onMediaAction(action)
+    override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaItem>>) {
+        result.detach()
+        val appContext = applicationContext
+        Thread {
+            val items = runCatching { CarMediaCatalog.children(appContext, parentId) }
+                .onFailure { Log.w(TAG, "Could not build media list for $parentId", it) }
+                .getOrDefault(emptyList())
+            result.sendResult(items.toMutableList())
+        }.start()
+    }
+
+    private fun applyUpdate(playing: Boolean, newTitle: String, newArtist: String) {
+        state = if (playing) PlaybackState.STATE_PLAYING else PlaybackState.STATE_PAUSED
+        title = newTitle
+        artist = newArtist
+        publishState()
+    }
+
+    /** Play button: resume whatever the session describes, or the last page when it's empty. */
+    @VisibleForTesting
+    internal fun resume() {
+        if (state == PlaybackState.STATE_NONE || state == PlaybackState.STATE_STOPPED) {
+            CarMediaCatalog.lastPlayed(this)?.let { playInCar(it) }
+            return
+        }
+        forward("play")
+    }
+
+    /** A page picked in Android Auto's list; anything not in [CarMediaCatalog] is ignored. */
+    @VisibleForTesting
+    internal fun playFromMediaId(mediaId: String?) {
+        CarMediaCatalog.pageFor(this, mediaId)?.let { playInCar(it) }
+    }
+
+    /**
+     * Voice request ("Hey Google, play jazz radio on RoadBrowser"). An empty query means "play
+     * RoadBrowser" and resumes; otherwise the best-matching listed page plays.
+     */
+    @VisibleForTesting
+    internal fun playFromSearch(query: String?) {
+        val wanted = query?.trim().orEmpty()
+        if (wanted.isEmpty()) {
+            resume()
+            return
+        }
+        val page = CarMediaCatalog.search(this, wanted)
+        if (page != null) {
+            playInCar(page)
+            return
+        }
+        // Keep whatever is already playing; only an idle session reports the miss.
+        if (state == PlaybackState.STATE_PLAYING || state == PlaybackState.STATE_BUFFERING) return
+        session.setPlaybackState(
+            PlaybackState.Builder()
+                .setActions(SUPPORTED_ACTIONS)
+                .setState(PlaybackState.STATE_ERROR, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 0f)
+                .setErrorMessage(getString(R.string.car_media_no_match, wanted))
+                .build()
+        )
+        session.isActive = true
+        handler.removeCallbacks(stopWhenIdle)
+        handler.postDelayed(stopWhenIdle, PAUSED_TIMEOUT_MS)
+    }
+
+    private fun playInCar(page: CarMediaCatalog.Page) {
+        takeOwnership(Source.CAR_PLAYER)
+        BackgroundWebPlayer.play(this, page.url)
+        state = PlaybackState.STATE_BUFFERING
+        title = page.title
+        artist = ""
+        publishState()
+    }
+
+    @VisibleForTesting
+    internal fun forward(action: String) {
+        when (owner) {
+            Source.CAR_PLAYER -> BackgroundWebPlayer.dispatch(action)
+            Source.BROWSER -> actionHandler?.onMediaAction(action)
+        }
+    }
+
+    private fun shutDown() {
+        forward("pause")
+        BackgroundWebPlayer.release()
+        owner = Source.BROWSER
+        handler.removeCallbacks(stopWhenIdle)
+        state = PlaybackState.STATE_STOPPED
+        session.setPlaybackState(PlaybackState.Builder().setState(state, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 0f).build())
+        session.isActive = false
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        isStarted = false
+        // Android Auto may still be bound to the browser service; this only ends the started state.
+        stopSelf()
     }
 
     private fun publishState() {
@@ -105,27 +223,32 @@ class MediaPlaybackService : Service() {
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
                 .build()
         )
-        val state = if (isPlaying) PlaybackState.STATE_PLAYING else PlaybackState.STATE_PAUSED
+        val isPlaying = state == PlaybackState.STATE_PLAYING || state == PlaybackState.STATE_BUFFERING
         session.setPlaybackState(
             PlaybackState.Builder()
-                .setActions(
-                    PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PAUSE or
-                        PlaybackState.ACTION_PLAY_PAUSE or PlaybackState.ACTION_STOP or
-                        PlaybackState.ACTION_SKIP_TO_NEXT or PlaybackState.ACTION_SKIP_TO_PREVIOUS or
-                        PlaybackState.ACTION_FAST_FORWARD or PlaybackState.ACTION_REWIND
-                )
-                .setState(state, PlaybackState.PLAYBACK_POSITION_UNKNOWN, if (isPlaying) 1f else 0f)
+                .setActions(SUPPORTED_ACTIONS)
+                .setState(state, PlaybackState.PLAYBACK_POSITION_UNKNOWN, if (state == PlaybackState.STATE_PLAYING) 1f else 0f)
                 .build()
         )
         session.isActive = true
 
-        val notification = buildNotification()
+        // A service Android Auto created by binding isn't started; start it so playback outlives
+        // the car disconnecting. Allowed here because a foreground app (Android Auto or the
+        // browser) is what triggered the playback.
+        if (!isStarted && isPlaying) {
+            try {
+                startService(Intent(this, MediaPlaybackService::class.java))
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, "Could not start media service", e)
+            }
+        }
+
         try {
-            startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+            startForeground(NOTIFICATION_ID, buildNotification(isPlaying), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
         } catch (e: ForegroundServiceStartNotAllowedException) {
-            // Playback started while the activity was already stopped and the OS refused the
-            // promotion. A service started with startForegroundService() that never reaches the
-            // foreground is killed with an ANR, so bow out cleanly instead.
+            // Playback started while the app was already in the background and the OS refused
+            // the promotion. A service started with startForegroundService() that never reaches
+            // the foreground is killed with an ANR, so bow out cleanly instead.
             Log.w(TAG, "Foreground promotion refused", e)
             stopSelf()
             return
@@ -137,7 +260,7 @@ class MediaPlaybackService : Service() {
         }
     }
 
-    private fun buildNotification(): Notification {
+    private fun buildNotification(isPlaying: Boolean): Notification {
         val stopIntent = PendingIntent.getService(
             this,
             1,
@@ -185,29 +308,59 @@ class MediaPlaybackService : Service() {
         private const val EXTRA_PLAYING = "playing"
         private const val EXTRA_TITLE = "title"
         private const val EXTRA_ARTIST = "artist"
+        private const val ACTION_PLAY_FROM_SEARCH = "com.yashmaurya.roadbrowser.media.PLAY_FROM_SEARCH"
+        private const val EXTRA_QUERY = "query"
         private const val PAUSED_TIMEOUT_MS = 10 * 60 * 1000L
 
-        /** Receives session button presses; set by the activity while it is alive. */
+        private const val SUPPORTED_ACTIONS =
+            PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PAUSE or
+                PlaybackState.ACTION_PLAY_PAUSE or PlaybackState.ACTION_STOP or
+                PlaybackState.ACTION_SKIP_TO_NEXT or PlaybackState.ACTION_SKIP_TO_PREVIOUS or
+                PlaybackState.ACTION_FAST_FORWARD or PlaybackState.ACTION_REWIND or
+                PlaybackState.ACTION_PLAY_FROM_MEDIA_ID or PlaybackState.ACTION_PLAY_FROM_SEARCH
+
+        private val TRUSTED_BROWSER_PACKAGES = setOf(
+            "com.google.android.projection.gearhead", // Android Auto
+            "com.android.systemui"                    // phone media controls / resumption
+        )
+
+        /** Receives session button presses for the tabs; set by the activity while it is alive. */
         @Volatile
         var actionHandler: MediaActionHandler? = null
 
         @Volatile
-        private var isRunning = false
+        private var instance: MediaPlaybackService? = null
+
+        @Volatile
+        private var owner = Source.BROWSER
 
         /**
-         * Pushes the page's playback state into the session. The service is created on demand;
-         * the promotion to foreground happens inside the service so the caller is never blocked.
+         * Pushes a source's playback state into the session. A source that isn't the current
+         * owner only matters once it starts playing, at which point it takes the session over.
+         * The service is created on demand; the promotion to foreground happens inside the
+         * service so the caller is never blocked. Main thread only.
          */
-        fun update(context: Context, playing: Boolean, title: String, artist: String) {
+        fun update(context: Context, source: Source, playing: Boolean, title: String, artist: String, pageUrl: String?) {
+            if (source != owner) {
+                if (!playing) return
+                takeOwnership(source)
+            }
+            if (playing && !pageUrl.isNullOrBlank()) {
+                BrowserPreferences.setLastMediaPage(context, pageUrl, title)
+            }
+            val running = instance
+            if (running != null) {
+                running.applyUpdate(playing, title, artist)
+                return
+            }
             val intent = Intent(context, MediaPlaybackService::class.java)
                 .setAction(ACTION_UPDATE)
                 .putExtra(EXTRA_PLAYING, playing)
                 .putExtra(EXTRA_TITLE, title)
                 .putExtra(EXTRA_ARTIST, artist)
             try {
-                // A running service can be poked from the background; only a cold start needs
-                // (and is allowed) the foreground variant.
-                if (isRunning) context.startService(intent) else context.startForegroundService(intent)
+                // Only a cold start needs (and is allowed) the foreground variant.
+                context.startForegroundService(intent)
             } catch (e: ForegroundServiceStartNotAllowedException) {
                 Log.w(TAG, "Cannot start media service from background", e)
             } catch (e: IllegalStateException) {
@@ -215,8 +368,42 @@ class MediaPlaybackService : Service() {
             }
         }
 
-        fun stop(context: Context) {
-            context.stopService(Intent(context, MediaPlaybackService::class.java))
+        /**
+         * A voice search handed to the app outside Android Auto (the phone's assistant sends
+         * MEDIA_PLAY_FROM_SEARCH to the browser activity). Called from a visible activity, which
+         * is what allows the start.
+         */
+        fun playFromSearch(context: Context, query: String?) {
+            val running = instance
+            if (running != null) {
+                running.playFromSearch(query)
+                return
+            }
+            val intent = Intent(context, MediaPlaybackService::class.java)
+                .setAction(ACTION_PLAY_FROM_SEARCH)
+                .putExtra(EXTRA_QUERY, query)
+            try {
+                context.startService(intent)
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, "Cannot start media service for a voice search", e)
+            }
+        }
+
+        /** Called when the browser activity goes away; ends the session if the tabs owned it. */
+        fun onBrowserClosed() {
+            actionHandler = null
+            if (owner == Source.BROWSER) {
+                instance?.shutDown()
+            }
+        }
+
+        private fun takeOwnership(source: Source) {
+            if (source == owner) return
+            when (owner) {
+                Source.CAR_PLAYER -> BackgroundWebPlayer.dispatch("pause")
+                Source.BROWSER -> actionHandler?.onMediaAction("pause")
+            }
+            owner = source
         }
     }
 }

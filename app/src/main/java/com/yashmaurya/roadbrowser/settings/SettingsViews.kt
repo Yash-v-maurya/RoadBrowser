@@ -1,13 +1,9 @@
 package com.yashmaurya.roadbrowser.settings
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Typeface
 import android.net.Uri
 import android.text.InputType
 import android.util.TypedValue
@@ -19,20 +15,14 @@ import android.webkit.WebViewDatabase
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.common.BitMatrix
-import com.google.zxing.qrcode.QRCodeWriter
 import com.yashmaurya.roadbrowser.AppConstants
 import com.yashmaurya.roadbrowser.R
 import com.yashmaurya.roadbrowser.data.BrowserPreferences
@@ -53,12 +43,19 @@ data class SettingsCallbacks(
 )
 
 object SettingsViews {
+
+    private const val MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT
+    private const val WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT
+
     fun createSettingsContent(
         context: Context,
         includeDragHandle: Boolean = true,
         callbacks: SettingsCallbacks = SettingsCallbacks()
     ): View {
-        fun dp(v: Int): Int = (v * context.resources.displayMetrics.density).toInt()
+        val res = context.resources
+
+        fun dp(v: Int): Int = (v * res.displayMetrics.density).toInt()
+        fun px(dimenRes: Int): Int = res.getDimensionPixelSize(dimenRes)
 
         fun getColorFromAttr(attrResId: Int): Int {
             val tv = TypedValue()
@@ -68,15 +65,53 @@ object SettingsViews {
                 }
                 return tv.data
             }
-            return android.graphics.Color.TRANSPARENT
+            return Color.TRANSPARENT
         }
 
+        // Typography roles come from the theme (TextAppearance.RoadBrowser.*): titles are
+        // 600 weight, body 400, labels 500. Never a raw textSize/textStyle here.
+        fun styleFromAttr(attrResId: Int): Int {
+            val tv = TypedValue()
+            return if (context.theme.resolveAttribute(attrResId, tv, true)) tv.resourceId else 0
+        }
+
+        val roleTitleLarge = styleFromAttr(com.google.android.material.R.attr.textAppearanceTitleLarge)
+        val roleTitleMedium = styleFromAttr(com.google.android.material.R.attr.textAppearanceTitleMedium)
+        val roleTitleSmall = styleFromAttr(com.google.android.material.R.attr.textAppearanceTitleSmall)
+        val roleBodyMedium = styleFromAttr(com.google.android.material.R.attr.textAppearanceBodyMedium)
+        val roleBodySmall = styleFromAttr(com.google.android.material.R.attr.textAppearanceBodySmall)
+        val roleLabelLarge = styleFromAttr(com.google.android.material.R.attr.textAppearanceLabelLarge)
+
+        fun TextView.applyRole(styleRes: Int) {
+            if (styleRes != 0) {
+                setTextAppearance(styleRes)
+            }
+        }
+
+        val columnCount = res.getInteger(R.integer.settings_column_count).coerceAtLeast(1)
+        val columnGap = px(R.dimen.settings_column_gap)
+        val cardSpacing = px(R.dimen.settings_card_spacing)
+        val cardCorner = px(R.dimen.settings_card_corner_radius).toFloat()
+        val cardPadH = px(R.dimen.settings_card_padding_horizontal)
+        val cardPadV = px(R.dimen.settings_card_padding_vertical)
+        val cardPadWide = px(R.dimen.settings_card_padding_wide)
+        val headerPad = px(R.dimen.settings_header_padding)
+        val sectionIconGap = px(R.dimen.settings_section_icon_gap)
+        val sectionSpacing = px(R.dimen.settings_section_spacing)
+        val rowMinHeight = px(R.dimen.settings_row_min_height)
+        val rowPadH = px(R.dimen.settings_row_padding_horizontal)
+        val rowPadV = px(R.dimen.settings_row_padding_vertical)
+        val rowIconSize = px(R.dimen.settings_row_icon_size)
+        val rowIconGap = px(R.dimen.settings_row_icon_gap)
+        val rowCorner = px(R.dimen.settings_row_corner_radius).toFloat()
+        val rowValueSpacing = px(R.dimen.settings_row_value_spacing)
+        val buttonMinHeight = px(R.dimen.settings_button_min_height)
+
         fun createStyledCard(): MaterialCardView = MaterialCardView(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(16) }
-            radius = dp(16).toFloat()
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+                topMargin = cardSpacing
+            }
+            radius = cardCorner
             cardElevation = 0f
             strokeWidth = dp(1)
             strokeColor = getColorFromAttr(com.google.android.material.R.attr.colorOutlineVariant)
@@ -86,21 +121,24 @@ object SettingsViews {
         fun createSectionTitle(
             titleText: String,
             iconRes: Int,
-            iconWidthDp: Int = 20,
-            iconHeightDp: Int = 20,
+            iconWidthDp: Int = 0,
+            iconHeightDp: Int = 0,
             tintIcon: Boolean = true,
-            bottomPaddingDp: Int = 0
+            spaceBelow: Boolean = false
         ): LinearLayout {
+            val defaultIcon = px(R.dimen.settings_section_icon_size)
+            val iconWidth = if (iconWidthDp > 0) dp(iconWidthDp) else defaultIcon
+            val iconHeight = if (iconHeightDp > 0) dp(iconHeightDp) else defaultIcon
             return LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                if (bottomPaddingDp > 0) {
-                    setPadding(0, 0, 0, dp(bottomPaddingDp))
+                if (spaceBelow) {
+                    setPadding(0, 0, 0, sectionSpacing)
                 }
 
                 addView(ImageView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(dp(iconWidthDp), dp(iconHeightDp)).apply {
-                        marginEnd = dp(10)
+                    layoutParams = LinearLayout.LayoutParams(iconWidth, iconHeight).apply {
+                        marginEnd = sectionIconGap
                     }
                     setImageResource(iconRes)
                     if (tintIcon) {
@@ -111,9 +149,9 @@ object SettingsViews {
                 })
 
                 addView(TextView(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f)
                     text = titleText
-                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleMedium)
-                    typeface = Typeface.DEFAULT_BOLD
+                    applyRole(roleTitleMedium)
                 })
             }
         }
@@ -122,14 +160,14 @@ object SettingsViews {
             return MaterialButton(context, null, androidx.appcompat.R.attr.borderlessButtonStyle).apply {
                 id = idRes
                 text = textStr
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
+                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+                minHeight = buttonMinHeight
+                minimumHeight = buttonMinHeight
                 gravity = Gravity.START or Gravity.CENTER_VERTICAL
+                applyRole(roleLabelLarge)
                 setTextColor(getColorFromAttr(com.google.android.material.R.attr.colorOnSurface))
                 setIconResource(iconRes)
-                iconSize = context.resources.getDimensionPixelSize(R.dimen.icon_size_small)
+                iconSize = res.getDimensionPixelSize(R.dimen.icon_size_small)
                 iconPadding = dp(12)
                 iconTint = ColorStateList.valueOf(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary))
                 iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
@@ -162,6 +200,24 @@ object SettingsViews {
                 .show()
         }
 
+        fun rowRipple(): android.graphics.drawable.Drawable {
+            val onSurfaceColorVal = getColorFromAttr(com.google.android.material.R.attr.colorOnSurface)
+            val rippleColor = ColorStateList.valueOf(
+                androidx.core.graphics.ColorUtils.setAlphaComponent(onSurfaceColorVal, 30)
+            )
+            val contentBg = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = rowCorner
+                setColor(Color.TRANSPARENT)
+            }
+            val maskBg = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = rowCorner
+                setColor(Color.WHITE)
+            }
+            return android.graphics.drawable.RippleDrawable(rippleColor, contentBg, maskBg)
+        }
+
         fun createSettingRow(
             title: String,
             statusText: String,
@@ -175,28 +231,14 @@ object SettingsViews {
                 gravity = Gravity.CENTER_VERTICAL
                 isClickable = true
                 isFocusable = true
-                setPadding(dp(12), dp(12), dp(12), dp(12))
-                
-                val rippleColor = ColorStateList.valueOf(
-                    androidx.core.graphics.ColorUtils.setAlphaComponent(onSurfaceColorVal, 30)
-                )
-                val contentBg = android.graphics.drawable.GradientDrawable().apply {
-                    shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                    cornerRadius = dp(8).toFloat()
-                    setColor(Color.TRANSPARENT)
-                }
-                val maskBg = android.graphics.drawable.GradientDrawable().apply {
-                    shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                    cornerRadius = dp(8).toFloat()
-                    setColor(Color.WHITE)
-                }
-                background = android.graphics.drawable.RippleDrawable(rippleColor, contentBg, maskBg)
-                
+                minimumHeight = rowMinHeight
+                setPadding(rowPadH, rowPadV, rowPadH, rowPadV)
+                background = rowRipple()
                 setOnClickListener { onClick() }
 
                 addView(ImageView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(dp(24), dp(24)).apply {
-                        marginEnd = dp(16)
+                    layoutParams = LinearLayout.LayoutParams(rowIconSize, rowIconSize).apply {
+                        marginEnd = rowIconGap
                     }
                     setImageResource(iconRes)
                     imageTintList = ColorStateList.valueOf(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary))
@@ -204,24 +246,23 @@ object SettingsViews {
 
                 val textCol = LinearLayout(context).apply {
                     orientation = LinearLayout.VERTICAL
-                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f)
                 }
                 textCol.addView(TextView(context).apply {
                     text = title
-                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleSmall)
+                    applyRole(roleTitleSmall)
                     setTextColor(onSurfaceColorVal)
-                    typeface = Typeface.DEFAULT_BOLD
                 })
                 textCol.addView(TextView(context).apply {
                     text = statusText
-                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+                    applyRole(roleBodyMedium)
                     setTextColor(onSurfaceVariantColorVal)
-                    setPadding(0, dp(2), 0, 0)
+                    setPadding(0, rowValueSpacing, 0, 0)
                 })
                 addView(textCol)
 
                 addView(ImageView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(dp(24), dp(24))
+                    layoutParams = LinearLayout.LayoutParams(rowIconSize, rowIconSize)
                     setImageResource(R.drawable.arrow_forward_24px)
                     imageTintList = ColorStateList.valueOf(onSurfaceVariantColorVal)
                     alpha = 0.5f
@@ -242,6 +283,7 @@ object SettingsViews {
             val switch = SwitchMaterial(context).apply {
                 isChecked = isCheckedValue
                 isEnabled = isEnabledValue
+                minimumHeight = rowMinHeight
                 setUseMaterialThemeColors(true)
             }
             val row = LinearLayout(context).apply {
@@ -249,23 +291,11 @@ object SettingsViews {
                 gravity = Gravity.CENTER_VERTICAL
                 isClickable = isEnabledValue
                 isFocusable = isEnabledValue
-                setPadding(dp(12), dp(12), dp(12), dp(12))
-                
+                minimumHeight = rowMinHeight
+                setPadding(rowPadH, rowPadV, rowPadH, rowPadV)
+
                 if (isEnabledValue) {
-                    val rippleColor = ColorStateList.valueOf(
-                        androidx.core.graphics.ColorUtils.setAlphaComponent(onSurfaceColorVal, 30)
-                    )
-                    val contentBg = android.graphics.drawable.GradientDrawable().apply {
-                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = dp(8).toFloat()
-                        setColor(Color.TRANSPARENT)
-                    }
-                    val maskBg = android.graphics.drawable.GradientDrawable().apply {
-                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = dp(8).toFloat()
-                        setColor(Color.WHITE)
-                    }
-                    background = android.graphics.drawable.RippleDrawable(rippleColor, contentBg, maskBg)
+                    background = rowRipple()
                     setOnClickListener {
                         switch.toggle()
                     }
@@ -274,8 +304,8 @@ object SettingsViews {
                 }
 
                 addView(ImageView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(dp(24), dp(24)).apply {
-                        marginEnd = dp(16)
+                    layoutParams = LinearLayout.LayoutParams(rowIconSize, rowIconSize).apply {
+                        marginEnd = rowIconGap
                     }
                     setImageResource(iconRes)
                     imageTintList = ColorStateList.valueOf(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary))
@@ -283,19 +313,20 @@ object SettingsViews {
 
                 val textCol = LinearLayout(context).apply {
                     orientation = LinearLayout.VERTICAL
-                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f).apply {
+                        marginEnd = rowIconGap
+                    }
                 }
                 textCol.addView(TextView(context).apply {
                     text = title
-                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleSmall)
+                    applyRole(roleTitleSmall)
                     setTextColor(onSurfaceColorVal)
-                    typeface = Typeface.DEFAULT_BOLD
                 })
                 textCol.addView(TextView(context).apply {
                     text = description
-                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+                    applyRole(roleBodyMedium)
                     setTextColor(onSurfaceVariantColorVal)
-                    setPadding(0, dp(2), 0, 0)
+                    setPadding(0, rowValueSpacing, 0, 0)
                 })
                 addView(textCol)
 
@@ -307,25 +338,28 @@ object SettingsViews {
             return row
         }
 
-        val smallIconSize = context.resources.getDimensionPixelSize(R.dimen.icon_size_small)
+        val smallIconSize = res.getDimensionPixelSize(R.dimen.icon_size_small)
         val onSurfaceColor = getColorFromAttr(com.google.android.material.R.attr.colorOnSurface)
         val onSurfaceVariantColor = getColorFromAttr(com.google.android.material.R.attr.colorOnSurfaceVariant)
 
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            setPadding(dp(16), 0, dp(16), dp(24))
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            val sidePad = px(R.dimen.settings_page_padding_horizontal)
+            setPadding(sidePad, 0, sidePad, px(R.dimen.settings_page_padding_bottom))
+        }
+
+        // Section cards are collected first and flowed into one or two columns at the end,
+        // depending on the available width. The weight is a rough row count, used to keep
+        // the two columns close to the same height on a wide, short head unit.
+        val sectionCards = mutableListOf<Pair<View, Int>>()
+        fun addSection(card: View, weight: Int) {
+            sectionCards.add(card to weight)
         }
 
         if (includeDragHandle) {
             val handleFrame = FrameLayout(context).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
+                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
                 setPadding(0, dp(12), 0, dp(16))
             }
             handleFrame.addView(View(context).apply {
@@ -336,11 +370,8 @@ object SettingsViews {
         }
 
         val headerCard = MaterialCardView(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            radius = dp(16).toFloat()
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            radius = cardCorner
             cardElevation = 0f
             setCardBackgroundColor(getColorFromAttr(com.google.android.material.R.attr.colorSurfaceContainerLow))
             strokeWidth = dp(1)
@@ -349,29 +380,34 @@ object SettingsViews {
         val headerInner = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(20), dp(20), dp(20), dp(20))
+            minimumHeight = rowMinHeight
+            setPadding(headerPad, headerPad, headerPad, headerPad)
         }
         val titleCol = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f).apply {
+                marginEnd = rowIconGap
+            }
         }
         titleCol.addView(TextView(context).apply {
             id = R.id.settingsHeaderTitle
             text = context.getString(R.string.settings_title)
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleLarge)
+            applyRole(roleTitleLarge)
             setTextColor(onSurfaceColor)
-            typeface = Typeface.DEFAULT_BOLD
         })
         titleCol.addView(TextView(context).apply {
             text = context.getString(R.string.settings_subtitle)
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
+            applyRole(roleBodySmall)
             setTextColor(onSurfaceVariantColor)
             alpha = 0.8f
         })
         val backBtn = MaterialButton(context, null, androidx.appcompat.R.attr.borderlessButtonStyle).apply {
             id = R.id.buttonSettingsBack
             text = context.getString(R.string.menu_back)
+            applyRole(roleLabelLarge)
             setTextColor(onSurfaceColor)
+            minHeight = buttonMinHeight
+            minimumHeight = buttonMinHeight
             setIconResource(R.drawable.arrow_back_24px)
             iconTint = ColorStateList.valueOf(onSurfaceColor)
             iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
@@ -387,13 +423,13 @@ object SettingsViews {
         val appearanceCard = createStyledCard()
         val appearanceInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(16), dp(8), dp(16))
+            setPadding(cardPadH, cardPadV, cardPadH, cardPadV)
         }
         appearanceInner.addView(
             createSectionTitle(
                 context.getString(R.string.settings_appearance),
                 R.drawable.settings_24px,
-                bottomPaddingDp = 8
+                spaceBelow = true
             )
         )
 
@@ -448,18 +484,18 @@ object SettingsViews {
         appearanceInner.addView(betaDarkRow)
 
         appearanceCard.addView(appearanceInner)
-        container.addView(appearanceCard)
+        addSection(appearanceCard, 2)
 
         val displayScaleCard = createStyledCard()
         val displayScaleInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(16), dp(8), dp(16))
+            setPadding(cardPadH, cardPadV, cardPadH, cardPadV)
         }
         displayScaleInner.addView(
             createSectionTitle(
                 context.getString(R.string.settings_display_scale),
                 R.drawable.computer_24,
-                bottomPaddingDp = 8
+                spaceBelow = true
             )
         )
 
@@ -525,18 +561,18 @@ object SettingsViews {
         displayScaleInner.addView(scaleRow)
 
         displayScaleCard.addView(displayScaleInner)
-        container.addView(displayScaleCard)
+        addSection(displayScaleCard, 1)
 
         val homePageCard = createStyledCard()
         val homePageInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(16), dp(8), dp(16))
+            setPadding(cardPadH, cardPadV, cardPadH, cardPadV)
         }
         homePageInner.addView(
             createSectionTitle(
                 context.getString(R.string.settings_home_page),
                 R.drawable.home_24px,
-                bottomPaddingDp = 8
+                spaceBelow = true
             )
         )
 
@@ -584,18 +620,18 @@ object SettingsViews {
         homePageInner.addView(homePageRow)
 
         homePageCard.addView(homePageInner)
-        container.addView(homePageCard)
+        addSection(homePageCard, 1)
 
         val startupCard = createStyledCard()
         val startupInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(16), dp(8), dp(16))
+            setPadding(cardPadH, cardPadV, cardPadH, cardPadV)
         }
         startupInner.addView(
             createSectionTitle(
                 context.getString(R.string.settings_startup),
                 R.drawable.refresh_24px,
-                bottomPaddingDp = 8
+                spaceBelow = true
             )
         )
 
@@ -624,18 +660,18 @@ object SettingsViews {
         startupInner.addView(resumePageRow)
 
         startupCard.addView(startupInner)
-        container.addView(startupCard)
+        addSection(startupCard, 2)
 
         val startPageCard = createStyledCard()
         val startPageInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(16), dp(16), dp(16))
+            setPadding(cardPadWide, cardPadV, cardPadWide, cardPadV)
         }
         startPageInner.addView(
             createSectionTitle(
                 context.getString(R.string.settings_start_page),
                 R.drawable.kid_star_24px,
-                bottomPaddingDp = 8
+                spaceBelow = true
             )
         )
 
@@ -643,22 +679,22 @@ object SettingsViews {
         val countRow = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(4), 0, dp(4))
-            
+            minimumHeight = rowMinHeight
+            setPadding(0, rowPadV, 0, rowPadV)
+
             addView(ImageView(context).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(24), dp(24)).apply { marginEnd = dp(16) }
+                layoutParams = LinearLayout.LayoutParams(rowIconSize, rowIconSize).apply { marginEnd = rowIconGap }
                 setImageResource(R.drawable.kid_star_24px)
                 imageTintList = ColorStateList.valueOf(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary))
             })
             val textCol = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f)
             }
             textCol.addView(TextView(context).apply {
                 text = "Quick Links"
-                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleSmall)
+                applyRole(roleTitleSmall)
                 setTextColor(onSurfaceColor)
-                typeface = Typeface.DEFAULT_BOLD
             })
             textCol.addView(TextView(context).apply {
                 text = context.getString(
@@ -666,9 +702,9 @@ object SettingsViews {
                     startPageCount,
                     BrowserPreferences.MAX_START_PAGE_SITES
                 )
-                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+                applyRole(roleBodyMedium)
                 setTextColor(onSurfaceVariantColor)
-                setPadding(0, dp(2), 0, 0)
+                setPadding(0, rowValueSpacing, 0, 0)
             })
             addView(textCol)
         }
@@ -680,20 +716,19 @@ object SettingsViews {
         } else {
             context.getString(R.string.settings_start_page_background_custom)
         }
-        
+
         startPageInner.addView(TextView(context).apply {
             text = "Background Image"
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleSmall)
+            applyRole(roleTitleSmall)
             setTextColor(onSurfaceColor)
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, dp(12), 0, dp(2))
+            setPadding(0, rowPadV, 0, rowValueSpacing)
         })
-        
+
         startPageInner.addView(TextView(context).apply {
             text = bgStatusText
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+            applyRole(roleBodyMedium)
             setTextColor(onSurfaceVariantColor)
-            setPadding(0, 0, 0, dp(12))
+            setPadding(0, 0, 0, sectionSpacing)
         })
 
         val startPageButtons = LinearLayout(context).apply {
@@ -703,12 +738,15 @@ object SettingsViews {
         }
         val chooseBackgroundButton = MaterialButton(context, null, com.google.android.material.R.attr.materialButtonTonalStyle).apply {
             text = context.getString(R.string.settings_start_page_choose_background)
+            applyRole(roleLabelLarge)
+            minHeight = buttonMinHeight
+            minimumHeight = buttonMinHeight
             setIconResource(R.drawable.search_24px)
             iconSize = smallIconSize
             iconPadding = dp(8)
             isEnabled = callbacks.onPickStartPageBackground != null
             alpha = if (isEnabled) 1f else 0.6f
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+            layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f).apply {
                 marginEnd = dp(8)
             }
             setOnClickListener {
@@ -717,12 +755,15 @@ object SettingsViews {
         }
         val clearBackgroundButton = MaterialButton(context, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
             text = context.getString(R.string.settings_start_page_clear_background)
+            applyRole(roleLabelLarge)
+            minHeight = buttonMinHeight
+            minimumHeight = buttonMinHeight
             setIconResource(R.drawable.delete_forever_24px)
             iconSize = smallIconSize
             iconPadding = dp(8)
             isEnabled = !backgroundStatus.isNullOrBlank() && callbacks.onClearStartPageBackground != null
             alpha = if (isEnabled) 1f else 0.6f
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+            layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f).apply {
                 marginStart = dp(8)
             }
             setOnClickListener {
@@ -734,25 +775,25 @@ object SettingsViews {
         startPageInner.addView(startPageButtons)
 
         startPageCard.addView(startPageInner)
-        container.addView(startPageCard)
+        addSection(startPageCard, 3)
 
         val searchCard = createStyledCard()
         val searchInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(16), dp(8), dp(16))
+            setPadding(cardPadH, cardPadV, cardPadH, cardPadV)
         }
         searchInner.addView(
             createSectionTitle(
                 context.getString(R.string.settings_search_engine),
                 R.drawable.search_24px,
-                bottomPaddingDp = 4
+                spaceBelow = true
             )
         )
         searchInner.addView(TextView(context).apply {
             text = context.getString(R.string.settings_search_engine_description)
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+            applyRole(roleBodyMedium)
             setTextColor(onSurfaceVariantColor)
-            setPadding(dp(12), 0, dp(12), dp(8))
+            setPadding(rowPadH, 0, rowPadH, sectionSpacing)
         })
 
         var currentEngine = BrowserPreferences.getSearchEngine(context)
@@ -777,23 +818,24 @@ object SettingsViews {
                 }
                 .show()
         }
+        // Row structure is icon / text column (title, value) / chevron.
         searchEngineStatusView =
             ((searchEngineRow.getChildAt(1) as? LinearLayout)?.getChildAt(1) as? TextView)
         searchInner.addView(searchEngineRow)
 
         searchCard.addView(searchInner)
-        container.addView(searchCard)
+        addSection(searchCard, 2)
 
         val shieldsCard = createStyledCard()
         val shieldsInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(16), dp(8), dp(16))
+            setPadding(cardPadH, cardPadV, cardPadH, cardPadV)
         }
         shieldsInner.addView(
             createSectionTitle(
                 context.getString(R.string.settings_shields),
                 R.drawable.security_24px,
-                bottomPaddingDp = 4
+                spaceBelow = true
             )
         )
 
@@ -805,9 +847,9 @@ object SettingsViews {
 
         val shieldsStatusView = TextView(context).apply {
             text = shieldsStatusText(BrowserPreferences.isShieldsEnabled(context))
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+            applyRole(roleBodyMedium)
             setTextColor(onSurfaceVariantColor)
-            setPadding(dp(12), 0, dp(12), dp(8))
+            setPadding(rowPadH, 0, rowPadH, sectionSpacing)
         }
         shieldsInner.addView(shieldsStatusView)
 
@@ -824,18 +866,18 @@ object SettingsViews {
         shieldsInner.addView(shieldsRow)
 
         shieldsCard.addView(shieldsInner)
-        container.addView(shieldsCard)
+        addSection(shieldsCard, 2)
 
         val mediaCard = createStyledCard()
         val mediaInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(16), dp(8), dp(16))
+            setPadding(cardPadH, cardPadV, cardPadH, cardPadV)
         }
         mediaInner.addView(
             createSectionTitle(
                 context.getString(R.string.settings_media_section_title),
                 R.drawable.devices_other_24px,
-                bottomPaddingDp = 8
+                spaceBelow = true
             )
         )
 
@@ -870,14 +912,14 @@ object SettingsViews {
         mediaInner.addView(openPopupsInNewTabRow)
 
         mediaCard.addView(mediaInner)
-        container.addView(mediaCard)
+        addSection(mediaCard, 3)
 
         val uaCard = createStyledCard()
         val uaInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(8), dp(16), dp(8), dp(16))
+            setPadding(cardPadH, cardPadV, cardPadH, cardPadV)
         }
-        uaInner.addView(createSectionTitle(context.getString(R.string.settings_user_agent), R.drawable.devices_other_24px, bottomPaddingDp = 8))
+        uaInner.addView(createSectionTitle(context.getString(R.string.settings_user_agent), R.drawable.devices_other_24px, spaceBelow = true))
 
         val currentProfile = BrowserPreferences.getUserAgentProfile(context)
         val uaStatusText = if (currentProfile == UserAgentProfile.SAFARI) {
@@ -909,19 +951,19 @@ object SettingsViews {
         uaInner.addView(uaRow)
 
         uaCard.addView(uaInner)
-        container.addView(uaCard)
+        addSection(uaCard, 1)
 
         val siteDataCard = createStyledCard()
         val siteDataInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(16), dp(16), dp(16))
+            setPadding(cardPadWide, cardPadV, cardPadWide, cardPadV)
         }
-        siteDataInner.addView(createSectionTitle(context.getString(R.string.settings_site_data_title), R.drawable.security_24px, bottomPaddingDp = 4))
+        siteDataInner.addView(createSectionTitle(context.getString(R.string.settings_site_data_title), R.drawable.security_24px, spaceBelow = true))
         siteDataInner.addView(TextView(context).apply {
             text = context.getString(R.string.settings_site_data_description)
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+            applyRole(roleBodyMedium)
             setTextColor(onSurfaceColor)
-            setPadding(0, dp(4), 0, dp(8))
+            setPadding(0, rowValueSpacing, 0, sectionSpacing)
         })
         val clearSitePermissionsButton = createListButton(
             R.id.buttonClearSitePermissions,
@@ -942,19 +984,51 @@ object SettingsViews {
         siteDataInner.addView(clearHttpHostsButton)
         siteDataInner.addView(clearCookiesButton)
         siteDataCard.addView(siteDataInner)
-        container.addView(siteDataCard)
+        addSection(siteDataCard, 4)
+
+        val legalCard = createStyledCard()
+        val legalInner = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(cardPadWide, cardPadV, cardPadWide, cardPadV)
+        }
+        legalInner.addView(createSectionTitle(context.getString(R.string.settings_legal), R.drawable.security_24px, spaceBelow = true))
+        legalInner.addView(TextView(context).apply {
+            text = context.getString(R.string.settings_legal_description)
+            applyRole(roleBodyMedium)
+            setTextColor(onSurfaceColor)
+            setPadding(0, 0, 0, sectionSpacing)
+        })
+        class LegalLink(val idRes: Int, val labelRes: Int, val iconRes: Int, val page: String)
+        listOf(
+            LegalLink(R.id.viewPrivacyPolicyButton, R.string.legal_privacy_policy, R.drawable.lock_24, LegalActivity.PRIVACY),
+            LegalLink(R.id.viewTermsButton, R.string.legal_terms_of_use, R.drawable.info_24px, LegalActivity.TERMS),
+            LegalLink(R.id.viewDrivingSafetyButton, R.string.legal_driving_safety, R.drawable.ic_warning_red, LegalActivity.DRIVING_SAFETY),
+            LegalLink(R.id.viewNoticesButton, R.string.legal_notices, R.drawable.public_24px, LegalActivity.NOTICES)
+        ).forEach { link ->
+            legalInner.addView(createListButton(link.idRes, context.getString(link.labelRes), link.iconRes).apply {
+                setOnClickListener {
+                    // Same task (and so the same display, car screen included) when started from
+                    // an activity.
+                    val intent = LegalActivity.intent(context, link.page)
+                    if (context !is android.app.Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                }
+            })
+        }
+        legalCard.addView(legalInner)
+        addSection(legalCard, 3)
 
         val licenseCard = createStyledCard()
         val licenseInner = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(12), dp(16), dp(16))
+            setPadding(cardPadWide, cardPadV, cardPadWide, cardPadV)
         }
-        licenseInner.addView(createSectionTitle(context.getString(R.string.settings_license), R.drawable.gplv3, iconWidthDp = 48, iconHeightDp = 24, tintIcon = false, bottomPaddingDp = 8))
+        licenseInner.addView(createSectionTitle(context.getString(R.string.settings_license), R.drawable.gplv3, iconWidthDp = 48, iconHeightDp = 24, tintIcon = false, spaceBelow = true))
         licenseInner.addView(TextView(context).apply {
             text = context.getString(R.string.settings_license_description)
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+            applyRole(roleBodyMedium)
             setTextColor(onSurfaceColor)
-            setPadding(0, 0, 0, dp(8))
+            setPadding(0, 0, 0, sectionSpacing)
         })
         val viewAuthorButton = createListButton(R.id.viewAuthorButton, context.getString(R.string.author_name), R.drawable.ic_github)
         val viewSourceButton = createListButton(R.id.viewSourceButton, context.getString(R.string.settings_view_source), R.drawable.ic_github)
@@ -965,7 +1039,39 @@ object SettingsViews {
         licenseInner.addView(viewLicenseButton)
         licenseInner.addView(viewOssLicensesButton)
         licenseCard.addView(licenseInner)
-        container.addView(licenseCard)
+        addSection(licenseCard, 5)
+
+        if (columnCount <= 1) {
+            sectionCards.forEach { (card, _) -> container.addView(card) }
+        } else {
+            val columnsRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+                isBaselineAligned = false
+            }
+            val columns = List(columnCount) { index ->
+                LinearLayout(context).apply {
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f).apply {
+                        if (index > 0) marginStart = columnGap
+                    }
+                }
+            }
+            columns.forEach { columnsRow.addView(it) }
+
+            val columnWeights = IntArray(columnCount)
+            sectionCards.forEach { (card, weight) ->
+                var target = 0
+                for (i in 1 until columnCount) {
+                    if (columnWeights[i] < columnWeights[target]) {
+                        target = i
+                    }
+                }
+                columns[target].addView(card)
+                columnWeights[target] += weight
+            }
+            container.addView(columnsRow)
+        }
 
         backBtn.setOnClickListener { callbacks.onClose() }
 

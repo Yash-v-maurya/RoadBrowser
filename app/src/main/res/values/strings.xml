@@ -126,6 +126,9 @@
     <string name="settings_youtube_compat_subtitle">Forces the mobile YouTube interface and keeps playback-critical requests unblocked so videos load reliably.</string>
     <string name="media_notification_channel">Media playback</string>
     <string name="media_notification_subtitle">Playing in the browser</string>
+    <string name="car_media_quick_links">Quick links</string>
+    <string name="car_media_bookmarks">Bookmarks</string>
+    <string name="car_media_no_match">No quick link or bookmark matches “%1$s”</string>
     <string name="settings_background_audio_title">Keep audio playing in background</string>
     <string name="settings_background_audio_subtitle">Video and audio keep playing when the browser isn\'t in the foreground (e.g. while Maps or the launcher is shown), like a music or podcast app.</string>
     <string name="settings_open_popups_in_new_tab_title">Open pop-ups in a new tab</string>
@@ -158,6 +161,12 @@
     <string name="settings_license">License</string>
     <string name="settings_license_description">RoadBrowser is free software licensed under the GNU General Public License version 3 (GPLv3). Source code: https://github.com/Yash-v-maurya/RoadBrowser</string>
     <string name="settings_view_source">View source on GitHub</string>
+    <string name="settings_legal">Legal</string>
+    <string name="settings_legal_description">How RoadBrowser handles your data, the terms for using it, and how to use it safely in the car.</string>
+    <string name="legal_privacy_policy">Privacy policy</string>
+    <string name="legal_terms_of_use">Terms of use</string>
+    <string name="legal_driving_safety">Driving safety</string>
+    <string name="legal_notices">Open-source notices</string>
     <string name="license_view_full">View Full License</string>
     
     <string name="open_source_title">Open-source libraries</string>

@@ -139,7 +139,15 @@ class TabManager(
             adapter = tabAdapter
         }
 
-        val touchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+        // In grid mode (wide screens) a tab's neighbour can be left or right of it, so dragging
+        // has to work on both axes or reordering silently does nothing sideways.
+        val dragDirections = if (activity.resources.getInteger(R.integer.list_span_count) > 1) {
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END
+        } else {
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN
+        }
+
+        val touchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(dragDirections, 0) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 tabAdapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
                 return true
@@ -218,15 +226,8 @@ class TabManager(
     }
 
     private fun setupMediaBridge(webView: android.webkit.WebView, tabId: Long) {
-        val bridge = com.yashmaurya.roadbrowser.media.MediaSessionBridge { playing, title, artist ->
+        com.yashmaurya.roadbrowser.media.MediaSessionBridge.attach(webView) { playing, title, artist ->
             activity.runOnUiThread { callbacks.onMediaStateChanged(tabId, playing, title, artist) }
-        }
-        webView.addJavascriptInterface(bridge, com.yashmaurya.roadbrowser.media.MediaSessionBridge.JS_OBJECT_NAME)
-        // Install at document start where supported so the page's own
-        // navigator.mediaSession.setActionHandler calls are captured; onPageFinished re-injects
-        // (idempotently) for WebViews without the feature.
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
-            WebViewCompat.addDocumentStartJavaScript(webView, com.yashmaurya.roadbrowser.media.MediaSessionBridge.PAGE_SHIM_JS, setOf("*"))
         }
     }
 

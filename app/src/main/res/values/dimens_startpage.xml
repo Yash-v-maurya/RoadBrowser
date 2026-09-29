@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Start page sizing, phone portrait (also the fallback for anything unqualified).
+
+    The grid span is derived at runtime from the available width and
+    start_page_grid_min_tile_width: the most columns that still leave every tile at
+    least that wide, restricted to spans that divide the six slots evenly (6, 3, 2) so
+    the last row is never ragged. start_page_grid_max_tile_width caps the cell on very
+    wide screens; the grid is then centred with symmetric side padding.
+
+    Portrait phone (360dp wide, 18dp page padding): 324dp available -> 2 columns of 162dp.
+-->
+<resources>
+    <!-- Grid -->
+    <dimen name="start_page_grid_min_tile_width">150dp</dimen>
+    <dimen name="start_page_grid_max_tile_width">260dp</dimen>
+
+    <!-- Tile -->
+    <dimen name="start_page_slot_gap">6dp</dimen>
+    <dimen name="start_page_slot_min_height">116dp</dimen>
+    <dimen name="start_page_slot_padding_h">12dp</dimen>
+    <dimen name="start_page_slot_padding_v">12dp</dimen>
+    <dimen name="start_page_slot_icon_size">52dp</dimen>
+    <dimen name="start_page_slot_icon_gap">8dp</dimen>
+
+    <!-- Labels: the title auto-shrinks between min and max before it will truncate. -->
+    <dimen name="start_page_slot_title_size">16sp</dimen>
+    <dimen name="start_page_slot_title_min_size">12sp</dimen>
+    <dimen name="start_page_slot_label_size">12sp</dimen>
+    <integer name="start_page_slot_title_lines">2</integer>
+    <bool name="start_page_slot_show_label">true</bool>
+
+    <!-- Resume card -->
+    <dimen name="start_page_resume_icon_size">48dp</dimen>
+    <dimen name="start_page_resume_row_min_height">64dp</dimen>
+    <dimen name="start_page_resume_padding_v">8dp</dimen>
+    <dimen name="start_page_resume_corner">22dp</dimen>
+    <bool name="start_page_resume_compact">false</bool>
+
+    <!-- Vertical rhythm between header, resume card and grid (activity_main.xml). -->
+    <dimen name="start_page_section_gap">12dp</dimen>
+</resources>

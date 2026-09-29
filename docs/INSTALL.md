@@ -84,7 +84,19 @@ Open RoadBrowser on the head unit, tap the **Menu** button on the toolbar, then 
 
 ---
 
-## 5. Updating
+## 5. Listening while driving
+
+Android Auto covers the browser with a "restricted while driving" screen as soon as the car moves, and won't open it again until you park. That is Android Auto's safety rule and RoadBrowser doesn't get around it. Audio carries on, though:
+
+- Anything you started while parked keeps playing when you pull away.
+- RoadBrowser also appears in Android Auto's **media** section, which stays usable while driving. Its list shows the page you last played, your quick links and your bookmarks. Picking one plays it in the background; nothing from the page is shown on the car screen. Play, pause and skip work from Android Auto's player and the steering wheel.
+- Add the stations, playlists and podcasts you listen to as quick links or bookmarks so they show up in that list.
+
+See [Driving Safety](legal/driving-safety.md).
+
+---
+
+## 6. Updating
 
 Every RoadBrowser release is signed with the same key, so a new version installs straight over the old one and keeps your bookmarks, tabs and settings.
 
@@ -106,3 +118,5 @@ You don't need to repeat the Android Auto unknown-sources steps after an update.
 | Steering-wheel buttons do nothing | Keep audio playing in background must be on; start playback once from the page so the media session becomes active. |
 | "App not installed" when updating | The APK is from a different signing key (for example a self-built copy over a release build). Uninstall the old copy first; bookmarks will be lost. |
 | YouTube shows the desktop site or won't play | Turn YouTube compatibility on and turn desktop mode off from the Menu. |
+| RoadBrowser missing from Android Auto's media section | Force-stop Android Auto and reconnect after installing the update; the media entry is new in 2.3. |
+| A page picked in the car's media list stays silent | Some players only start after a tap on their own play button. For those, start playback while parked; it keeps playing when you drive off. |

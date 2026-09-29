@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="@dimen/list_item_gap_vertical"
+    android:layout_marginStart="@dimen/list_item_gap_horizontal"
+    android:layout_marginEnd="@dimen/list_item_gap_horizontal"
+    android:minHeight="@dimen/list_item_min_height"
     app:cardCornerRadius="12dp"
     app:cardElevation="0dp"
     app:strokeWidth="1dp"
@@ -12,14 +15,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/list_item_min_height"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="12dp">
+        android:padding="@dimen/list_item_padding">
 
         <FrameLayout
             android:id="@+id/iconContainer"
-            android:layout_width="40dp"
-            android:layout_height="40dp" />
+            android:layout_width="@dimen/list_item_icon_size"
+            android:layout_height="@dimen/list_item_icon_size" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -31,10 +35,12 @@
 
             <TextView
                 android:id="@+id/activeBadge"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:text="@string/tab_manager_active_badge"
-                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:visibility="gone" />
 
             <TextView
@@ -43,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <TextView
                 android:id="@+id/urlText"
@@ -51,19 +57,23 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textAppearance="?attr/textAppearanceBodySmall"
                 android:alpha="0.7" />
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonClose"
             style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/list_item_action_size"
+            android:layout_height="@dimen/list_item_action_size"
+            android:minWidth="@dimen/list_item_action_size"
+            android:minHeight="@dimen/list_item_action_size"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:contentDescription="@string/tab_manager_close"
             app:icon="@drawable/ic_close"
             app:iconPadding="0dp"
-            app:iconSize="20dp"
+            app:iconSize="@dimen/list_item_action_icon_size"
             app:iconGravity="textStart" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

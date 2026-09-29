@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Wide and ultrawide head units (1280x720dp, 1920x720dp).
+
+     The strip's background still spans the full width - it is the hairline that separates
+     chrome from page - but its *content* is capped at 1200dp and centred. Stretched edge to
+     edge across 1920dp the Back button and the Menu button end up ~1.8m apart on a real dash,
+     and the pill floats alone in the middle; capping keeps every control inside one arm's
+     sweep from the centre console, which is where both front seats can reach it. -->
+<resources>
+    <dimen name="toolbar_chrome_height">72dp</dimen>
+    <dimen name="toolbar_chrome_side_padding">20dp</dimen>
+    <dimen name="toolbar_chrome_gap">12dp</dimen>
+    <dimen name="toolbar_chrome_content_max_width">1200dp</dimen>
+    <dimen name="toolbar_chrome_button_size">56dp</dimen>
+    <dimen name="toolbar_chrome_icon_size">28dp</dimen>
+    <dimen name="toolbar_chrome_pill_height">58dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_start">16dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_end">6dp</dimen>
+    <dimen name="toolbar_chrome_pill_button_size">52dp</dimen>
+    <dimen name="toolbar_chrome_pill_button_icon_size">24dp</dimen>
+    <dimen name="toolbar_chrome_lock_icon_size">22dp</dimen>
+    <dimen name="toolbar_chrome_pill_text_gap">10dp</dimen>
+    <dimen name="toolbar_chrome_address_text_size">18sp</dimen>
+    <dimen name="toolbar_chrome_badge_size">22dp</dimen>
+    <dimen name="menu_sheet_max_height">640dp</dimen>
+    <dimen name="sheet_handle_padding_vertical">16dp</dimen>
+</resources>

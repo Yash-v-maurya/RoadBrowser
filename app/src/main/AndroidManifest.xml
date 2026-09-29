@@ -66,6 +66,11 @@
                 <data android:scheme="http" />
                 <data android:scheme="https" />
             </intent-filter>
+            <!-- "Play <name> on RoadBrowser" from the phone's assistant; handed to the media service. -->
+            <intent-filter>
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
             <layout
                 android:minWidth="1dp"
                 android:minHeight="1dp"
@@ -99,10 +104,22 @@
             android:label="@string/settings_title"
             android:theme="@style/Theme.RoadBrowser" />
 
+        <activity
+            android:name=".settings.LegalActivity"
+            android:exported="false"
+            android:label="@string/settings_legal"
+            android:theme="@style/Theme.RoadBrowser" />
+
+        <!-- Also RoadBrowser's entry in Android Auto's media screen, which stays usable while
+             driving; onGetRoot only lets Android Auto and the system browse it. -->
         <service
             android:name=".media.MediaPlaybackService"
-            android:exported="false"
-            android:foregroundServiceType="mediaPlayback" />
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"

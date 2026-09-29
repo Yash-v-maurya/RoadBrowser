@@ -29,6 +29,9 @@ class MainActivitySetup(
     )
 
     fun setupClickListeners() {
+        // Sizes the strip and the menu sheet for the window we actually got, and keeps them
+        // sized across configuration changes (the activity handles those itself).
+        managers.uiManager.installChromeAdaptation()
         setupToolbarButtons()
         setupNavigationButtons()
         setupMenuButtons()

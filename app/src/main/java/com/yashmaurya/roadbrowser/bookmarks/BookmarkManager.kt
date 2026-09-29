@@ -3,6 +3,7 @@ package com.yashmaurya.roadbrowser.bookmarks
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -135,74 +136,9 @@ class BookmarkManager(
         return scheme == "http" || scheme == "https"
     }
 
-    fun displayLabelForUrl(url: String): String {
-        return try {
-            java.net.URI(url).host ?: url
-        } catch (e: Exception) {
-            url
-        }
-    }
+    fun displayLabelForUrl(url: String): String = labelForUrl(url)
 
-    fun displayTitleForUrl(url: String): String {
-        val host = runCatching { java.net.URI(url).host?.lowercase() }.getOrNull().orEmpty()
-        if (host.isBlank()) {
-            return displayLabelForUrl(url)
-        }
-
-        // 1. Remove common prefixes
-        val cleanedHost = host.removePrefix("www.").removePrefix("m.").removePrefix("mobile.")
-
-        // 2. Identify the main domain name part, taking double-TLDs (e.g. .co.jp, .org.uk) into account
-        val parts = cleanedHost.split('.')
-        val size = parts.size
-
-        val mainDomain = if (size >= 3) {
-            val subTld = parts[size - 2]
-            val tld = parts[size - 1]
-            val isDoubleTld = (subTld == "co" || subTld == "ne" || subTld == "ac" || subTld == "org" || subTld == "go" || subTld == "or") && tld.length == 2
-            if (isDoubleTld) {
-                parts[size - 3]
-            } else {
-                parts[size - 2]
-            }
-        } else if (size == 2) {
-            parts[0]
-        } else {
-            cleanedHost
-        }
-
-        // 3. Resolve the exact root domain for well-known mappings (prevents phishing subdomains mapping)
-        val normalizedRoot = if (size >= 3) {
-            val subTld = parts[size - 2]
-            val tld = parts[size - 1]
-            val isDoubleTld = (subTld == "co" || subTld == "ne" || subTld == "ac" || subTld == "org" || subTld == "go" || subTld == "or") && tld.length == 2
-            if (isDoubleTld) {
-                "${parts[size - 3]}.$subTld.$tld"
-            } else {
-                "${parts[size - 2]}.$tld"
-            }
-        } else {
-            cleanedHost
-        }
-
-        val mapped = when (normalizedRoot) {
-            "google.com", "google.co.jp" -> "Google"
-            "youtube.com" -> "YouTube"
-            "duckduckgo.com" -> "DuckDuckGo"
-            "weather.com" -> "Weather"
-            else -> null
-        }
-        if (mapped != null) {
-            return mapped
-        }
-
-        // 4. Fallback to title-casing the main domain name part
-        val segment = mainDomain.split('-', '_').firstOrNull().orEmpty()
-        if (segment.isBlank()) {
-            return displayLabelForUrl(url)
-        }
-        return segment.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-    }
+    fun displayTitleForUrl(url: String): String = titleForUrl(url)
 
     fun prefetchSiteIcon(url: String?) {
         if (!isActiveWebsiteUrl(url)) {
@@ -276,9 +212,22 @@ class BookmarkManager(
 
     fun refreshBookmarks() {
         if (binding.bookmarkManagerList.adapter == null) {
-            binding.bookmarkManagerList.layoutManager = LinearLayoutManager(activity)
+            // Wide screens show the bookmarks as a grid so a short head unit fits more than
+            // three rows at a glance; narrow screens keep the single column.
+            val spanCount = activity.resources.getInteger(R.integer.list_span_count).coerceAtLeast(1)
+            binding.bookmarkManagerList.layoutManager = if (spanCount > 1) {
+                GridLayoutManager(activity, spanCount)
+            } else {
+                LinearLayoutManager(activity)
+            }
             binding.bookmarkManagerList.adapter = bookmarkAdapter
-            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+            // Dragging sideways only makes sense once the list is a grid.
+            val dragDirections = if (spanCount > 1) {
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END
+            } else {
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN
+            }
+            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(dragDirections, 0) {
                 override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                     bookmarkAdapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
                     return true
@@ -373,5 +322,81 @@ class BookmarkManager(
         BrowserPreferences.setHomePageUrl(activity, url)
         Toast.makeText(activity, R.string.home_page_set, Toast.LENGTH_SHORT).show()
         callbacks.handleHomePagePreferenceChanged()
+    }
+
+    companion object {
+        /** Host of [url], or the URL itself when it has none. */
+        fun labelForUrl(url: String): String {
+            return try {
+                java.net.URI(url).host ?: url
+            } catch (e: Exception) {
+                url
+            }
+        }
+
+        /**
+         * Short site name for [url] ("YouTube", "Weather", ...) as shown on cards and lists.
+         * Pure, so screens without a BookmarkManager (the Android Auto media list) can use it.
+         */
+        fun titleForUrl(url: String): String {
+            val host = runCatching { java.net.URI(url).host?.lowercase() }.getOrNull().orEmpty()
+            if (host.isBlank()) {
+                return labelForUrl(url)
+            }
+
+            // 1. Remove common prefixes
+            val cleanedHost = host.removePrefix("www.").removePrefix("m.").removePrefix("mobile.")
+
+            // 2. Identify the main domain name part, taking double-TLDs (e.g. .co.jp, .org.uk) into account
+            val parts = cleanedHost.split('.')
+            val size = parts.size
+
+            val mainDomain = if (size >= 3) {
+                val subTld = parts[size - 2]
+                val tld = parts[size - 1]
+                val isDoubleTld = (subTld == "co" || subTld == "ne" || subTld == "ac" || subTld == "org" || subTld == "go" || subTld == "or") && tld.length == 2
+                if (isDoubleTld) {
+                    parts[size - 3]
+                } else {
+                    parts[size - 2]
+                }
+            } else if (size == 2) {
+                parts[0]
+            } else {
+                cleanedHost
+            }
+
+            // 3. Resolve the exact root domain for well-known mappings (prevents phishing subdomains mapping)
+            val normalizedRoot = if (size >= 3) {
+                val subTld = parts[size - 2]
+                val tld = parts[size - 1]
+                val isDoubleTld = (subTld == "co" || subTld == "ne" || subTld == "ac" || subTld == "org" || subTld == "go" || subTld == "or") && tld.length == 2
+                if (isDoubleTld) {
+                    "${parts[size - 3]}.$subTld.$tld"
+                } else {
+                    "${parts[size - 2]}.$tld"
+                }
+            } else {
+                cleanedHost
+            }
+
+            val mapped = when (normalizedRoot) {
+                "google.com", "google.co.jp" -> "Google"
+                "youtube.com" -> "YouTube"
+                "duckduckgo.com" -> "DuckDuckGo"
+                "weather.com" -> "Weather"
+                else -> null
+            }
+            if (mapped != null) {
+                return mapped
+            }
+
+            // 4. Fallback to title-casing the main domain name part
+            val segment = mainDomain.split('-', '_').firstOrNull().orEmpty()
+            if (segment.isBlank()) {
+                return labelForUrl(url)
+            }
+            return segment.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
     }
 }

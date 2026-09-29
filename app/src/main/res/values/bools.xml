@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Which controls the bottom strip can afford, by available width. Same ladder as
+    values*/dimens_chrome.xml. Anything switched off here is still reachable from the menu
+    sheet, never removed from the app.
+
+    Defaults are the compact-phone bucket (< 360dp): Back, address pill, Tabs, Menu only.
+-->
 <resources>
-    <!-- Forward / reload / bookmarks only fit in the bottom toolbar on wide screens. -->
+    <!-- Reload and Bookmarks. They duplicate menu entries, so they are the first to go. -->
     <bool name="toolbar_show_secondary_actions">false</bool>
+    <!-- Home. Duplicates "Start page" in the menu; dropped before the address gets squeezed. -->
+    <bool name="toolbar_show_home">false</bool>
+    <!-- The Go button inside the address pill. The keyboard's Go key always works, so on the
+         narrowest screens the pill spends that 48dp on readable address text instead. -->
+    <bool name="toolbar_show_pill_go">false</bool>
+
     <bool name="window_light_system_bars">true</bool>
 </resources>

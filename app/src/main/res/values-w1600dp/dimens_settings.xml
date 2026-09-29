@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="list_span_count">4</integer>
+    <dimen name="settings_page_padding_horizontal">32dp</dimen>
+</resources>

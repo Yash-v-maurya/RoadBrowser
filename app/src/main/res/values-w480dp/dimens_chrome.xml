@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 480-599dp: room for Home alongside the pill. -->
+<resources>
+    <dimen name="toolbar_chrome_side_padding">10dp</dimen>
+    <dimen name="toolbar_chrome_gap">6dp</dimen>
+    <dimen name="toolbar_chrome_pill_padding_start">12dp</dimen>
+    <dimen name="toolbar_chrome_lock_icon_size">20dp</dimen>
+    <dimen name="toolbar_chrome_address_text_size">16sp</dimen>
+    <dimen name="menu_sheet_max_height">600dp</dimen>
+</resources>
