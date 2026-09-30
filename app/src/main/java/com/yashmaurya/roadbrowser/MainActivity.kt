@@ -149,6 +149,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Nothing runs until the Terms of Use and Privacy Policy have been accepted.
+        if (!BrowserPreferences.hasAcceptedCurrentTerms(this)) {
+            startActivity(com.yashmaurya.roadbrowser.settings.WelcomeActivity.intent(this, intent))
+            finish()
+            return
+        }
         if (!isWebViewAvailable()) {
             showWebViewUnavailable()
             return

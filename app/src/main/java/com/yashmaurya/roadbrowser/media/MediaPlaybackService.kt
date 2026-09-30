@@ -122,6 +122,10 @@ class MediaPlaybackService : MediaBrowserService() {
     }
 
     override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaItem>>) {
+        if (!BrowserPreferences.hasAcceptedCurrentTerms(this)) {
+            result.sendResult(mutableListOf(termsNotice()))
+            return
+        }
         result.detach()
         val appContext = applicationContext
         Thread {
@@ -139,10 +143,27 @@ class MediaPlaybackService : MediaBrowserService() {
         publishState()
     }
 
+    /** Shown in Android Auto's list until the terms have been accepted on the phone. */
+    private fun termsNotice(): MediaItem {
+        val description = android.media.MediaDescription.Builder()
+            .setMediaId("terms")
+            .setTitle(getString(R.string.car_media_accept_terms_first))
+            .build()
+        return MediaItem(description, 0)
+    }
+
+    /** False (after telling Android Auto why) until the terms have been accepted on the phone. */
+    private fun termsAccepted(): Boolean {
+        if (BrowserPreferences.hasAcceptedCurrentTerms(this)) return true
+        showError(getString(R.string.car_media_accept_terms_first))
+        return false
+    }
+
     /** Play button: resume whatever the session describes, or the last page when it's empty. */
     @VisibleForTesting
     internal fun resume() {
         if (state == PlaybackState.STATE_NONE || state == PlaybackState.STATE_STOPPED) {
+            if (!termsAccepted()) return
             CarMediaCatalog.lastPlayed(this)?.let { playInCar(it) }
             return
         }
@@ -152,6 +173,7 @@ class MediaPlaybackService : MediaBrowserService() {
     /** A page picked in Android Auto's list; anything not in [CarMediaCatalog] is ignored. */
     @VisibleForTesting
     internal fun playFromMediaId(mediaId: String?) {
+        if (!termsAccepted()) return
         CarMediaCatalog.pageFor(this, mediaId)?.let { playInCar(it) }
     }
 
@@ -161,6 +183,7 @@ class MediaPlaybackService : MediaBrowserService() {
      */
     @VisibleForTesting
     internal fun playFromSearch(query: String?) {
+        if (!termsAccepted()) return
         val wanted = query?.trim().orEmpty()
         if (wanted.isEmpty()) {
             resume()

@@ -1,6 +1,10 @@
 package com.yashmaurya.roadbrowser.ui
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import android.widget.Toast
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.view.View
@@ -10,6 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
+import com.yashmaurya.roadbrowser.AppConstants
+import com.yashmaurya.roadbrowser.BuildConfig
 import com.yashmaurya.roadbrowser.R
 import com.yashmaurya.roadbrowser.bookmarks.BookmarkManager
 import com.yashmaurya.roadbrowser.data.BrowserPreferences
@@ -18,6 +24,7 @@ import com.yashmaurya.roadbrowser.settings.SettingsCallbacks
 import com.yashmaurya.roadbrowser.settings.SettingsViews
 import com.yashmaurya.roadbrowser.startpage.StartPageManager
 import com.yashmaurya.roadbrowser.tabs.TabManager
+import com.yashmaurya.roadbrowser.update.AppUpdater
 import com.yashmaurya.roadbrowser.web.updatePageDarkening
 
 class OverlayManager(
@@ -29,6 +36,9 @@ class OverlayManager(
     private val uiManager: BrowserUIManager,
     private val callbacks: OverlayCallbacks
 ) {
+
+    private var latestRelease: AppUpdater.Release? = null
+    private var isDownloadingUpdate = false
 
     interface OverlayCallbacks {
         fun onRecreateRequested()
@@ -165,39 +175,82 @@ class OverlayManager(
     }
 
     private fun fetchLatestVersion() {
+        latestRelease = null
+        binding.checkLatestProgressIndicator.isIndeterminate = true
+        binding.checkLatestOpenReleaseButton.setText(R.string.check_latest_view_release)
         Thread {
-            try {
-                val url = java.net.URL("https://api.github.com/repos/Yash-v-maurya/RoadBrowser/releases/latest")
-                val conn = url.openConnection() as java.net.HttpURLConnection
-                conn.setRequestProperty("Accept", "application/vnd.github.v3+json")
-
-                if (conn.responseCode == 200) {
-                    val response = conn.inputStream.bufferedReader().use { reader ->
-                        reader.readText()
-                    }
-                    val json = org.json.JSONObject(response)
-                    val latestUrl = json.getString("html_url")
-                    val tag = json.getString("tag_name")
-
-                    activity.runOnUiThread {
-                        binding.checkLatestProgressIndicator.visibility = View.GONE
-                        val currentVer = com.yashmaurya.roadbrowser.BuildConfig.VERSION_NAME.trim().removePrefix("v")
-                        val latestVer = tag.trim().removePrefix("v")
-
-                        if (currentVer.equals(latestVer, ignoreCase = true)) {
-                            binding.checkLatestLatestVersion.text = activity.getString(R.string.check_latest_up_to_date, latestVer)
-                            binding.checkLatestLatestVersion.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary))
-                        } else {
-                            binding.checkLatestLatestVersion.text = activity.getString(R.string.check_latest_update_available, tag)
-                            binding.checkLatestLatestVersion.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorError))
-                        }
-                        callbacks.onVersionInfoReceived(latestUrl, tag)
-                    }
+            val release = runCatching { AppUpdater.fetchLatest() }.getOrNull()
+            activity.runOnUiThread {
+                binding.checkLatestProgressIndicator.visibility = View.GONE
+                if (release == null) {
+                    binding.checkLatestLatestVersion.setText(R.string.check_latest_failed)
+                    return@runOnUiThread
                 }
-            } catch (e: Exception) {
-                activity.runOnUiThread {
-                    binding.checkLatestProgressIndicator.visibility = View.GONE
+                latestRelease = release
+                if (AppUpdater.isNewer(release.version, BuildConfig.VERSION_NAME)) {
+                    binding.checkLatestLatestVersion.text = activity.getString(R.string.check_latest_update_available, release.tag)
+                    binding.checkLatestLatestVersion.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorError))
+                    if (release.apkUrl != null) {
+                        binding.checkLatestOpenReleaseButton.text = activity.getString(R.string.update_install_button, release.version)
+                    }
+                } else {
+                    binding.checkLatestLatestVersion.text = activity.getString(R.string.check_latest_up_to_date, BuildConfig.VERSION_NAME)
+                    binding.checkLatestLatestVersion.setTextColor(getColorFromAttr(androidx.appcompat.R.attr.colorPrimary))
                 }
+                callbacks.onVersionInfoReceived(release.pageUrl, release.tag)
+            }
+        }.start()
+    }
+
+    /** Installs a newer official release when there is one, otherwise opens the releases page. */
+    fun onReleaseButtonClicked() {
+        val release = latestRelease
+        if (release?.apkUrl != null && AppUpdater.isNewer(release.version, BuildConfig.VERSION_NAME)) {
+            startUpdate(release)
+        } else {
+            uiManager.openUriExternally(Uri.parse(release?.pageUrl ?: AppConstants.GITHUB_REPO_URL + "/releases/latest"))
+        }
+    }
+
+    private fun startUpdate(release: AppUpdater.Release) {
+        if (isDownloadingUpdate) return
+        // Android's own per-app switch; the user grants it once in system settings.
+        if (!activity.packageManager.canRequestPackageInstalls()) {
+            Toast.makeText(activity, R.string.update_allow_installs, Toast.LENGTH_LONG).show()
+            runCatching {
+                activity.startActivity(
+                    Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${activity.packageName}"))
+                )
+            }
+            return
+        }
+        isDownloadingUpdate = true
+        binding.checkLatestOpenReleaseButton.isEnabled = false
+        binding.checkLatestOpenReleaseButton.setText(R.string.update_downloading)
+        binding.checkLatestProgressIndicator.apply {
+            visibility = View.VISIBLE
+            isIndeterminate = false
+            max = 100
+            progress = 0
+        }
+        Thread {
+            val result = runCatching {
+                val apk = AppUpdater.download(activity, release) { percent ->
+                    activity.runOnUiThread { binding.checkLatestProgressIndicator.progress = percent }
+                }
+                AppUpdater.verify(activity, apk)?.let { reason -> error(reason) }
+                apk
+            }
+            activity.runOnUiThread {
+                isDownloadingUpdate = false
+                binding.checkLatestOpenReleaseButton.isEnabled = true
+                binding.checkLatestOpenReleaseButton.text = activity.getString(R.string.update_install_button, release.version)
+                binding.checkLatestProgressIndicator.visibility = View.GONE
+                result
+                    .mapCatching { AppUpdater.install(activity, it) }
+                    .onFailure {
+                        Toast.makeText(activity, activity.getString(R.string.update_failed, it.message.orEmpty()), Toast.LENGTH_LONG).show()
+                    }
             }
         }.start()
     }

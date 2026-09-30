@@ -157,8 +157,7 @@ class MainActivitySetup(
         }
 
         binding.checkLatestOpenReleaseButton.setOnClickListener {
-            val uri = Uri.parse(activity.latestReleaseUrlProxy)
-            managers.uiManager.openUriExternally(uri)
+            managers.overlayManager.onReleaseButtonClicked()
         }
     }
 

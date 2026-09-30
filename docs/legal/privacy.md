@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Effective 29 September 2026**
+**Effective 30 September 2026**
 
 RoadBrowser is a web browser for Android phones and Android Auto, made by Yash V Maurya. This policy explains what happens to your information when you use it.
 
@@ -18,6 +18,7 @@ To work as a browser, RoadBrowser keeps the following in its private storage on 
 - **Open tabs** (their addresses and titles), so they can be restored the next time you open the app.
 - **The last page you visited** and **the last page that played audio**, used for "resume last page" and for "continue" in Android Auto.
 - **Your settings**, such as theme, display scale, search engine and playback options.
+- **Your acceptance of the terms**: which version of the Terms of Use and this policy you accepted on first launch, and when.
 - **Site permission choices**: the websites you allowed to use the microphone or your location, plain-HTTP sites you allowed, and client certificates you chose for automatic sign-in.
 - **Site icons** downloaded for your quick links and bookmarks.
 - **Website data** that sites store through Android System WebView: cookies, cache and local storage.
@@ -31,7 +32,7 @@ RoadBrowser only goes online in these cases:
 - **Websites you open.** Your phone connects directly to each site and to anything that page loads (images, scripts, video). Those sites receive your IP address, your browser details (the user agent), cookies they set and anything you type into them. Their own privacy policies apply. Shields blocks known ad and tracker domains, but no blocker catches everything.
 - **Search.** Text you type in the address bar that isn't a web address goes to the search engine you picked: Brave Search by default, or Google or DuckDuckGo.
 - **Site icons.** To show icons on quick links, bookmarks and the Android Auto list, the app downloads each icon directly from that site.
-- **Update check.** Only when you open "Check for updates" in the menu, the app asks GitHub's public API for the latest release. GitHub receives your IP address, and GitHub's privacy statement applies.
+- **Updates.** Only when you open "Check for updates" in the menu, the app asks GitHub's public API for the latest release. If you then tap "Download and install", the APK is downloaded from GitHub's release servers. GitHub receives your IP address, and GitHub's privacy statement applies.
 
 The app makes no other connections of its own.
 
@@ -57,6 +58,7 @@ Some parts of the browser are provided by Android and Google, and their own priv
 | Foreground service (media playback) | Keeps audio playing and steering-wheel buttons working when the browser isn't on screen. |
 | Change audio settings | Used for web audio and voice input. |
 | Car app permissions | Declared so the app can run on an Android Auto car screen. |
+| Install updates | Lets RoadBrowser hand an official update to Android's installer when you tap "Download and install". Android asks you to allow it the first time and to confirm every install. |
 
 ## 6. Selling and sharing
 

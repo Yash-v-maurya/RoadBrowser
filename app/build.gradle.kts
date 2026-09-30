@@ -17,8 +17,8 @@ android {
         applicationId = "com.yashmaurya.roadbrowser"
         minSdk = 35
         targetSdk = 37
-        versionCode = 12
-        versionName = "2.3.1"
+        versionCode = 13
+        versionName = "2.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

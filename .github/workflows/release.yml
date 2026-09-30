@@ -61,6 +61,12 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: ./gradlew assembleRelease --no-daemon --stacktrace
 
+      # A copy with a fixed name, so
+      # https://github.com/Yash-v-maurya/RoadBrowser/releases/latest/download/RoadBrowser.apk
+      # always downloads the newest release.
+      - name: Add fixed-name copy
+        run: cp app/build/renamedApks/release/RoadBrowser-*.apk app/build/renamedApks/release/RoadBrowser.apk
+
       - name: List built APKs
         run: ls -l app/build/renamedApks/release/
 

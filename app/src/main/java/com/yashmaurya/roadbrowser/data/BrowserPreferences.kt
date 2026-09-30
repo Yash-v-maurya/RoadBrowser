@@ -50,6 +50,8 @@ object BrowserPreferences {
     private const val KEY_OPEN_POPUPS_IN_NEW_TAB_ENABLED = "open_popups_in_new_tab_enabled"
     private const val KEY_LAST_MEDIA_URL = "last_media_url"
     private const val KEY_LAST_MEDIA_TITLE = "last_media_title"
+    private const val KEY_ACCEPTED_TERMS_VERSION = "accepted_terms_version"
+    private const val KEY_ACCEPTED_TERMS_AT = "accepted_terms_at"
     private const val DEFAULT_URL = "https://www.google.com"
 
     private val DEFAULT_BOOKMARKS = listOf(
@@ -59,6 +61,12 @@ object BrowserPreferences {
         "https://weather.com",
         "https://keepandroidopen.org"
     )
+
+    /**
+     * Version of the Terms of Use and Privacy Policy the user must accept before using the app.
+     * Bump it when either changes in a way people need to agree to again.
+     */
+    const val TERMS_VERSION = 1
 
     const val MAX_START_PAGE_SITES = 6
     const val MAX_OPEN_TABS = 8
@@ -504,6 +512,24 @@ object BrowserPreferences {
             .edit()
             .putBoolean(KEY_OPEN_POPUPS_IN_NEW_TAB_ENABLED, enabled)
             .apply()
+    }
+
+    fun hasAcceptedCurrentTerms(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_ACCEPTED_TERMS_VERSION, 0) >= TERMS_VERSION
+    }
+
+    /** Records on the phone which terms version was accepted, and when. */
+    fun acceptCurrentTerms(context: Context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putInt(KEY_ACCEPTED_TERMS_VERSION, TERMS_VERSION)
+            .putLong(KEY_ACCEPTED_TERMS_AT, System.currentTimeMillis())
+            .apply()
+    }
+
+    fun getTermsAcceptedAt(context: Context): Long {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getLong(KEY_ACCEPTED_TERMS_AT, 0L)
     }
 
     /**

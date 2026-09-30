@@ -11,7 +11,9 @@ RoadBrowser doesn't come from the Play Store, so Android Auto hides it until you
 
 ## Step 1: Install RoadBrowser
 
-Download `RoadBrowser-<version>.apk` on the phone and open it. If Android asks, allow installs from your browser or file manager. Updates install over the old version and keep your bookmarks and settings.
+On the phone, open [github.com/Yash-v-maurya/RoadBrowser/releases/latest/download/RoadBrowser.apk](https://github.com/Yash-v-maurya/RoadBrowser/releases/latest/download/RoadBrowser.apk). That link always downloads the newest official release. Open the downloaded file; if Android asks, allow your browser or file manager to install apps.
+
+The first time RoadBrowser opens, it asks you to accept the Terms of Use and Privacy Policy, then offers this setup checklist.
 
 ## Step 2: Allow apps from outside the Play Store in Android Auto
 
@@ -38,6 +40,14 @@ In Android Auto's settings, open **Customize launcher** and make sure **RoadBrow
 ## Step 5: Reconnect
 
 Unplug the phone and plug it back in, or force-stop Android Auto (App info > Force stop). With wireless Android Auto, turn the car's Bluetooth off and on. The car launcher refreshes and RoadBrowser appears.
+
+## Getting updates
+
+- **In the app:** Menu > Check for Updates > **Download and install**. RoadBrowser downloads the official release from GitHub, checks it's signed with the RoadBrowser key, and Android asks you to confirm. The first time, Android asks you to allow RoadBrowser to install updates.
+- **Automatically:** add RoadBrowser to [Obtainium](https://github.com/ImranR98/Obtainium) using the button in the project's README.
+- **By hand:** download the newest APK from the link in step 1 and open it.
+
+Updates install over the old version and keep your bookmarks and settings.
 
 ## Using it in the car
 

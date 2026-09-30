@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.4.0 - 2026-09-30
+
+Version code 13.
+
+### Added
+
+- **First-launch agreement.** The app opens only after the user ticks that they agree to the Terms of Use, have read the Privacy Policy, and take responsibility for how they use RoadBrowser in a vehicle. The accepted version and time are recorded on the phone, and the agreement is shown again when the terms change. Android Auto's media list asks for the same acceptance first. After accepting, the Android Auto setup checklist is offered.
+- **In-app updates from GitHub.** Check for Updates now offers **Download and install** when a newer official release exists. The APK is only taken from this repository's release assets and is checked for the package name, a newer version code and the RoadBrowser signing key before Android's installer asks the user to confirm.
+- **Always-latest download link.** Releases also carry a fixed-name `RoadBrowser.apk`, so `releases/latest/download/RoadBrowser.apk` always gets the newest version.
+
+### Changed
+
+- Terms of Use: explicit acceptance, the user's responsibility and assumption of risk, indemnity, updates and severability. Privacy Policy: the acceptance record and update downloads.
+- Version comparison for updates is numeric, so 2.3.1 counts as newer than 2.3.
+
 ## 2.3.1 - 2026-09-29
 
 Version code 12.

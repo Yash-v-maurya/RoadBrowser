@@ -37,6 +37,7 @@ class MediaPlaybackServiceTest {
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
         BrowserPreferences.setBookmarks(context, listOf("https://radio.example/live"))
+        BrowserPreferences.acceptCurrentTerms(context)
         MediaPlaybackService.actionHandler = MediaPlaybackService.MediaActionHandler { tabActions += it }
         controller = Robolectric.buildService(MediaPlaybackService::class.java).create()
         service = controller.get()
@@ -140,6 +141,16 @@ class MediaPlaybackServiceTest {
         service.playFromSearch("")
 
         assertEquals("https://radio.example/live", shadowOf(BackgroundWebPlayer.loadedWebView).lastLoadedUrl)
+    }
+
+    @Test
+    fun nothingPlaysInTheCarBeforeTheTermsAreAccepted() {
+        context.getSharedPreferences("browser_prefs", Context.MODE_PRIVATE).edit().remove("accepted_terms_version").commit()
+
+        service.playFromMediaId("page:https://radio.example/live")
+        service.playFromSearch("radio")
+
+        assertFalse(BackgroundWebPlayer.isLoaded)
     }
 
     @Test
